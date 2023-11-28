@@ -12,6 +12,12 @@ var window: Long = NULL
 val width: Int = 1280
 val height: Int = 720
 
+val vertices = floatArrayOf(
+    -0.5f, -0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
+    0.0f, 0.5f, 0.0f
+)
+
 fun main(args: Array<String>) {
     println("Hello World!")
     println("Program arguments: ${args.joinToString()}")
@@ -72,6 +78,18 @@ fun loop() {
     // bindings available for use.
     GL.createCapabilities()
 
+    val shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource)
+
+    val vaoID = glGenVertexArrays()
+    val vboID = glGenBuffers()
+
+    glBindVertexArray(vaoID)
+    glBindBuffer(GL_ARRAY_BUFFER, vboID)
+    glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
+
+    GL20.glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
+    glEnableVertexAttribArray(0)
+
     // Set the clear color
     glClearColor(1.0f, 0.3f, 0.3f, 0.0f)
     glViewport(0, 0, width, height)
@@ -80,6 +98,9 @@ fun loop() {
     while (glfwWindowShouldClose(window) != true) {
         // Render here
         glClear(GL_COLOR_BUFFER_BIT)
+        glUseProgram(shaderProgram)
+        glBindVertexArray(vaoID)
+        glDrawArrays(GL_TRIANGLES, 0, 3)
 
         // Swap front and back buffers
         glfwSwapBuffers(window)
