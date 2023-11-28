@@ -8,10 +8,20 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil.NULL
 
+var window: Long = NULL;
+
 fun main(args: Array<String>) {
     println("Hello World!")
     println("Program arguments: ${args.joinToString()}")
 
+    init()
+    loop()
+
+    glfwDestroyWindow(window)
+    glfwTerminate()
+}
+
+fun init() {
     val glfwInitialize = glfwInit()
     if (glfwInitialize != true) {
         throw Error("GLFW could not be initialized!")
@@ -19,13 +29,12 @@ fun main(args: Array<String>) {
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3)
-    val window: Long = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL)
+    window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL)
     if (window == NULL) {
         glfwTerminate()
         throw Error("Window could not be created!")
     }
 
-    @Suppress("NAME_SHADOWING")
     val keyCallback = { window: Long, key: Int, scancode: Int, action: Int, mods: Int ->
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true)
@@ -36,7 +45,9 @@ fun main(args: Array<String>) {
     glfwMakeContextCurrent(window)
     glfwSwapInterval(1)
     glfwSetKeyCallback(window, keyCallback)
+}
 
+fun loop() {
     // This line is critical for LWJGL's interoperation with GLFW's
     // OpenGL context, or any context that is managed externally.
     // LWJGL detects the context that is current in the current thread,
@@ -57,8 +68,4 @@ fun main(args: Array<String>) {
         // Poll for and process events
         glfwPollEvents()
     }
-
-    glfwDestroyWindow(window)
-    glfwTerminate()
-
 }
