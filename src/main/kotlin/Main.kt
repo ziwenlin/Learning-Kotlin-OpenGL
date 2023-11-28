@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil.NULL
 
-var window: Long = NULL;
+var window: Long = NULL
 
 fun main(args: Array<String>) {
     println("Hello World!")
@@ -27,14 +27,18 @@ fun init() {
         throw Error("GLFW could not be initialized!")
     }
 
+    // Configure GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3)
+
+    // Create the window
     window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL)
     if (window == NULL) {
         glfwTerminate()
         throw Error("Window could not be created!")
     }
 
+    // Set up a key callback. It will be called every time a key is pressed, repeated or released.
     val keyCallback = { window: Long, key: Int, scancode: Int, action: Int, mods: Int ->
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true)
@@ -43,7 +47,11 @@ fun init() {
 
     // Make the window's context current
     glfwMakeContextCurrent(window)
+    // Enable v-sync
     glfwSwapInterval(1)
+    // Make the window visible
+    glfwShowWindow(window)
+    // Assigning a key callback to the window
     glfwSetKeyCallback(window, keyCallback)
 }
 
@@ -58,7 +66,8 @@ fun loop() {
     // Set the clear color
     glClearColor(1.0f, 0.3f, 0.3f, 0.0f)
 
-    while (glfwWindowShouldClose(window) == false) {
+    // Main window loop
+    while (glfwWindowShouldClose(window) != true) {
         // Render here
         glClear(GL_COLOR_BUFFER_BIT)
 
