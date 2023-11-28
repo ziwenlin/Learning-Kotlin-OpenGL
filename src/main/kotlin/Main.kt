@@ -4,11 +4,13 @@
 * */
 
 import org.lwjgl.glfw.GLFW.*
-import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.*
+import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.NULL
 
 var window: Long = NULL
+val width: Int = 1280
+val height: Int = 720
 
 fun main(args: Array<String>) {
     println("Hello World!")
@@ -30,9 +32,10 @@ fun init() {
     // Configure GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3)
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
 
     // Create the window
-    window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL)
+    window = glfwCreateWindow(width, height, "Hello World", NULL, NULL)
     if (window == NULL) {
         glfwTerminate()
         throw Error("Window could not be created!")
@@ -53,6 +56,12 @@ fun init() {
     glfwShowWindow(window)
     // Assigning a key callback to the window
     glfwSetKeyCallback(window, keyCallback)
+
+    // Assigning a window size change callback
+    val frameSizeCallback = { window: Long, width: Int, height: Int ->
+        glViewport(0, 0, width, height)
+    }
+    glfwSetFramebufferSizeCallback(window, frameSizeCallback)
 }
 
 fun loop() {
@@ -65,6 +74,7 @@ fun loop() {
 
     // Set the clear color
     glClearColor(1.0f, 0.3f, 0.3f, 0.0f)
+    glViewport(0, 0, width, height)
 
     // Main window loop
     while (glfwWindowShouldClose(window) != true) {
