@@ -12,18 +12,6 @@ var window: Long = NULL
 val width: Int = 1280
 val height: Int = 720
 
-val vertices = floatArrayOf(
-    0.5f, 0.5f, 0.0f, // top right
-    0.5f, -0.5f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f, // bottom left
-    -0.5f, 0.5f, 0.0f // top left
-)
-
-val indices = intArrayOf(
-    0, 1, 3, // first triangle
-    1, 2, 3 // second triangle
-)
-
 fun main(args: Array<String>) {
     println("Hello World!")
     println("Program arguments: ${args.joinToString()}")
