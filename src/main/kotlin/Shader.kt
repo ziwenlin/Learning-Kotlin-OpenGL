@@ -23,7 +23,8 @@ fun createFragmentShader(fragmentShaderSource: String): Int {
         val length = GL30.glGetShaderi(fragmentShader, GL30.GL_INFO_LOG_LENGTH)
         val info = GL20.glGetShaderInfoLog(fragmentShader, length)
         println(info)
-        throw Error(info)
+        println(Error(info))
+        close(-1)
     }
     return fragmentShader
 }
@@ -39,7 +40,8 @@ fun createVertexShader(vertexShaderSource: String): Int {
         val length = GL30.glGetShaderi(vertexShader, GL30.GL_INFO_LOG_LENGTH)
         val info = GL20.glGetShaderInfoLog(vertexShader, length)
         println(info)
-        throw Error(info)
+        println(Error(info))
+        close(-1)
     }
     return vertexShader
 }
@@ -56,7 +58,9 @@ fun linkShaderProgram(vertexShader: Int, fragmentShader: Int): Int {
         val length = GL30.glGetProgrami(shaderProgram, GL30.GL_INFO_LOG_LENGTH)
         val info = GL20.glGetProgramInfoLog(shaderProgram, length)
         println(info)
-        throw Error(info)
+        println(Error(info))
+        close(-1)
     }
     return shaderProgram
 }
+

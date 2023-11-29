@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.*
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.NULL
+import kotlin.system.exitProcess
 
 var window: Long = NULL
 val width: Int = 1280
@@ -18,15 +19,20 @@ fun main(args: Array<String>) {
 
     init()
     loop()
+    close(0)
+}
 
+fun close(status: Int) {
     glfwDestroyWindow(window)
     glfwTerminate()
+    exitProcess(status)
 }
 
 fun init() {
     val glfwInitialize = glfwInit()
     if (glfwInitialize != true) {
-        throw Error("GLFW could not be initialized!")
+        println("GLFW could not be initialized!")
+        close(-1)
     }
 
     // Configure GLFW
@@ -37,8 +43,8 @@ fun init() {
     // Create the window
     window = glfwCreateWindow(width, height, "Hello World", NULL, NULL)
     if (window == NULL) {
-        glfwTerminate()
-        throw Error("Window could not be created!")
+        println("Window could not be created!")
+        close(-1)
     }
 
     // Set up a key callback. It will be called every time a key is pressed, repeated or released.
