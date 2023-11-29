@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.*
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.NULL
+import kotlin.math.sin
 import kotlin.system.exitProcess
 
 var window: Long = NULL
@@ -79,18 +80,24 @@ fun loop() {
     GL.createCapabilities()
 
     val shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource)
+    val shaderColorLocation = glGetUniformLocation(shaderProgram, "vColor")
 
     val vaoID = createElementVertexArray(vertices, indices)
 
     // Set the clear color
-    glClearColor(1.0f, 0.3f, 0.3f, 0.0f)
+    glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
     glViewport(0, 0, width, height)
 
     // Main window loop
     while (glfwWindowShouldClose(window) != true) {
+        // Get time since start
+        val timeValue = glfwGetTime()
+        val sineValue: Float = (sin(timeValue) / 2f + 0.5f).toFloat()
+
         // Render here
         glClear(GL_COLOR_BUFFER_BIT)
         glUseProgram(shaderProgram)
+        glUniform3f(shaderColorLocation, 0.2f * sineValue, 1.0f * sineValue, 0.2f * sineValue)
 
         glBindVertexArray(vaoID)
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
