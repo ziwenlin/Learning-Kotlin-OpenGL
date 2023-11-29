@@ -6,7 +6,8 @@ import kotlin.system.exitProcess
 class Window {
     private var window: Long = NULL
 
-    init {
+    fun init() {
+        // Initialize GLFW. Most GLFW functions will not work before doing this.
         val glfwInitialize = glfwInit()
         if (glfwInitialize != true) {
             println("GLFW could not be initialized!")
@@ -25,25 +26,13 @@ class Window {
             close(-1)
         }
 
-        // Set up a key callback. It will be called every time a key is pressed, repeated or released.
-        @Suppress("UNUSED_ANONYMOUS_PARAMETER")
-        val keyCallback = { window: Long, key: Int, scancode: Int, action: Int, mods: Int ->
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-                glfwSetWindowShouldClose(window, true)
-            }
-        }
-
         // Make the window's context current
         glfwMakeContextCurrent(window)
         // Enable v-sync
         glfwSwapInterval(1)
         // Make the window visible
         glfwShowWindow(window)
-        // Assigning a key callback to the window
-        glfwSetKeyCallback(window, keyCallback)
-    }
 
-    fun init() {
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
@@ -53,12 +42,14 @@ class Window {
     }
 
     fun close(status: Int) {
+        // Destroy the window abd terminate GLFW
         glfwDestroyWindow(window)
         glfwTerminate()
         exitProcess(status)
     }
 
     fun loop(program: () -> Unit) {
+        // Start the window loop
         while (glfwWindowShouldClose(window) != true) {
             // Run program
             program()
