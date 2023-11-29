@@ -30,3 +30,28 @@ class RenderObject(vertices: FloatArray, indices: IntArray) {
         glBindVertexArray(0)
     }
 }
+
+class SimpleRenderObject(vertices: FloatArray, stride: Int) {
+    private val vaoID = glGenVertexArrays()
+    private val vboID = glGenBuffers()
+
+    private val vertexCount = vertices.size / stride
+
+    init {
+        glBindVertexArray(vaoID)
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboID)
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, stride * Float.SIZE_BYTES, 0)
+        glEnableVertexAttribArray(0)
+
+        glBindVertexArray(0)
+    }
+
+    fun draw() {
+        glBindVertexArray(vaoID)
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount)
+        glBindVertexArray(0)
+    }
+}
