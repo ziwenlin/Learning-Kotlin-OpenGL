@@ -80,20 +80,7 @@ fun loop() {
 
     val shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource)
 
-    val vaoID = glGenVertexArrays()
-    val vboID = glGenBuffers()
-    val eboID = glGenBuffers()
-
-    glBindVertexArray(vaoID)
-
-    glBindBuffer(GL_ARRAY_BUFFER, vboID)
-    glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW)
-
-    GL20.glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
-    glEnableVertexAttribArray(0)
+    val vaoID = createElementVertexArray(vertices, indices)
 
     // Set the clear color
     glClearColor(1.0f, 0.3f, 0.3f, 0.0f)
