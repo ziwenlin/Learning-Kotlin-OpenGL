@@ -1,5 +1,6 @@
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL
+import org.lwjgl.opengl.GL11.glViewport
 import org.lwjgl.system.MemoryUtil.*
 import kotlin.system.exitProcess
 
@@ -39,6 +40,22 @@ class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities()
+
+        // Set up a key callback. It will be called every time a key is pressed, repeated or released.
+        @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+        val keyCallback = { window: Long, key: Int, scancode: Int, action: Int, mods: Int ->
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+                glfwSetWindowShouldClose(window, true)
+            }
+        }
+        glfwSetKeyCallback(window, keyCallback)
+
+        // Assigning a window size change callback
+        @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+        val frameSizeCallback = { window: Long, width: Int, height: Int ->
+            glViewport(0, 0, width, height)
+        }
+        glfwSetFramebufferSizeCallback(window, frameSizeCallback)
     }
 
     fun exit(status: Int) {
