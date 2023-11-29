@@ -11,7 +11,7 @@ class Window {
         val glfwInitialize = glfwInit()
         if (glfwInitialize != true) {
             println("GLFW could not be initialized!")
-            close(-1)
+            exit(-1)
         }
 
         // Configure GLFW
@@ -23,7 +23,7 @@ class Window {
         window = glfwCreateWindow(width, height, "Hello World", NULL, NULL)
         if (window == NULL) {
             println("Window could not be created!")
-            close(-1)
+            exit(-1)
         }
 
         // Make the window's context current
@@ -41,7 +41,7 @@ class Window {
         GL.createCapabilities()
     }
 
-    fun close(status: Int) {
+    fun exit(status: Int) {
         // Destroy the window abd terminate GLFW
         glfwDestroyWindow(window)
         glfwTerminate()

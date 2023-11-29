@@ -24,7 +24,7 @@ fun createFragmentShader(fragmentShaderSource: String): Int {
         val info = GL20.glGetShaderInfoLog(fragmentShader, length)
         println(info)
         println(Error(info))
-        window.close(-1)
+        window.exit(-1)
     }
     return fragmentShader
 }
@@ -41,7 +41,7 @@ fun createVertexShader(vertexShaderSource: String): Int {
         val info = GL20.glGetShaderInfoLog(vertexShader, length)
         println(info)
         println(Error(info))
-        window.close(-1)
+        window.exit(-1)
     }
     return vertexShader
 }
@@ -59,7 +59,7 @@ fun linkShaderProgram(vertexShader: Int, fragmentShader: Int): Int {
         val info = GL20.glGetProgramInfoLog(shaderProgram, length)
         println(info)
         println(Error(info))
-        window.close(-1)
+        window.exit(-1)
     }
     return shaderProgram
 }

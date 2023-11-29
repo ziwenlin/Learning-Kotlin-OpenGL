@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
     window.init()
     val program = createProgram()
     window.loop(program)
-    window.close(0)
+    window.exit(0)
 }
 
 fun createProgram(): () -> Unit {
