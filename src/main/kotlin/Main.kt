@@ -3,8 +3,7 @@
 *
 * */
 
-import org.lwjgl.glfw.GLFW.*
-import org.lwjgl.opengl.*
+import org.lwjgl.glfw.GLFW.glfwGetTime
 import org.lwjgl.opengl.GL30.*
 import kotlin.math.sin
 
@@ -17,17 +16,18 @@ fun main(args: Array<String>) {
     println("Program arguments: ${args.joinToString()}")
 
     window.init()
-    val program = loop()
+    val program = createProgram()
     window.loop(program)
     window.close(0)
 }
 
-fun loop() {
+fun createProgram(): () -> Unit {
     // Create shader program
     val shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource)
     val shaderColorLocation = glGetUniformLocation(shaderProgram, "vColor")
 
-    val vaoID = createElementVertexArray(vertices, indices)
+    // Create square render object
+    val squareRenderObject = RenderObject(vertices, indices)
 
     // Set the clear color
     glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
@@ -44,9 +44,8 @@ fun loop() {
         glUseProgram(shaderProgram)
         glUniform3f(shaderColorLocation, 0.2f * sineValue, 1.0f * sineValue, 0.2f * sineValue)
 
-        glBindVertexArray(vaoID)
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
-        glBindVertexArray(0)
+        // Render the objects
+        squareRenderObject.draw()
     }
     return program
 }
