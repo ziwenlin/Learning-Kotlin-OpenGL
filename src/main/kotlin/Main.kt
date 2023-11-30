@@ -5,7 +5,9 @@
 
 import org.lwjgl.glfw.GLFW.glfwGetTime
 import org.lwjgl.opengl.GL30.*
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 val window = Window()
 val width: Int = 1280
@@ -43,17 +45,22 @@ fun createProgram(): () -> Unit {
     val program = { ->
         // Get time since start
         val timeValue = glfwGetTime()
+        val timeRad = timeValue * PI / 2.0f
+        val timePhase = 2.0f / 3.0f * PI
 
         // Mathematical functions values based on time
         val sawState = if (timeValue % 4.0f < 2.0f) 1 else -1
         val sawTooth = ((timeValue % 2.0f - 1.0f) * sawState).toFloat()
         val sawSharp = sawTooth * sawTooth * sawTooth
-        val sineWave = sin(timeValue / PI * 2.0f).toFloat()
-        val cosWave = cos(timeValue / PI * 2.0f).toFloat()
+        val cosWave = cos(timeRad).toFloat()
+        val sineWave = sin(timeRad).toFloat()
+        val sineWave2 = sin(timeRad - timePhase).toFloat()
+        val sineWave3 = sin(timeRad + timePhase).toFloat()
 
         // Mathematical transition effects
-        val sawValue = sawSharp / 2.0f + 0.5f
         val sinValue = sineWave / 2.0f + 0.5f
+        val sinValue2 = sineWave2 / 2.0f + 0.5f
+        val sinValue3 = sineWave3 / 2.0f + 0.5f
         val cosValue = cosWave / 2.0f + 0.5f
 
         // Render here
@@ -62,13 +69,13 @@ fun createProgram(): () -> Unit {
         // Render the objects
         glUseProgram(shaderProgram)
         glUniform3f(shaderPositionLocation, 0.5f * cosWave, 0.5f * sineWave, 0f)
-        glUniform3f(shaderColorLocation, 0.8f * cosValue, 0.8f * cosValue * sinValue, 0.8f * sinValue)
+        glUniform3f(shaderColorLocation, 0.8f * sinValue, 0.8f * sinValue2, 0.8f * sinValue3)
         squareRenderObject.draw()
 
         // Render triangle objects
         glUseProgram(shaderProgram2)
-        glUniform3f(shaderPositionLocation2, 0.0f, 0.5f * sawSharp, 0.0f)
-        glUniform3f(shaderColorLocation2, 0.2f * sawValue, 1.0f * sawValue, 0.2f * sawValue)
+        glUniform3f(shaderPositionLocation2, 0.0f, 0.5f * -sawSharp, 0.0f)
+        glUniform3f(shaderColorLocation2, cosValue, cosValue, cosValue)
         triangleRenderObject.draw()
     }
     return program
