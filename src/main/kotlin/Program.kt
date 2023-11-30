@@ -8,11 +8,11 @@ fun createProgram(): () -> Unit {
     // Create shader program
     val shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource)
     val shaderColorLocation = glGetUniformLocation(shaderProgram, "vColor")
-    val shaderPositionLocation = glGetUniformLocation(shaderProgram, "vPos")
+    val shaderPositionLocation = glGetUniformLocation(shaderProgram, "vPosition")
 
     val shaderProgram2 = createShaderProgram(vertexShaderSource, fragmentShaderSource)
     val shaderColorLocation2 = glGetUniformLocation(shaderProgram, "vColor")
-    val shaderPositionLocation2 = glGetUniformLocation(shaderProgram, "vPos")
+    val shaderPositionLocation2 = glGetUniformLocation(shaderProgram, "vPosition")
 
     // Create square render object
     val squareRenderObject = RenderObject(boxVertices, boxIndices)

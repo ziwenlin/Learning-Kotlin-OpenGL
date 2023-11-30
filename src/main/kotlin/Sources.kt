@@ -1,12 +1,12 @@
 val vertexShaderSource = """
     #version 330 core
-    layout (location = 0) in vec3 aPos;
+    layout (location = 0) in vec3 aPosition;
 
-    uniform vec3 vPos;
+    uniform vec3 vPosition;
 
     void main()
     {
-        gl_Position = vec4(aPos + vPos, 1.0f);
+        gl_Position = vec4(aPosition + vPosition, 1.0f);
     }
 """.trimIndent()
 
@@ -19,6 +19,36 @@ val fragmentShaderSource = """
     void main()
     {
         FragColor = vec4(vColor, 1.0f);
+    }
+""".trimIndent()
+
+val vertexShaderSource2 = """
+    #version 330 core
+    layout (location = 0) in vec3 aPosition;
+    layout (location = 1) in vec3 aColor;
+
+    out vec3 vertexColor;
+
+    uniform vec3 vPosition;
+
+    void main()
+    {
+        gl_Position = vec4(aPosition + vPosition, 1.0f);
+        vertexColor = aColor;
+    }
+""".trimIndent()
+
+val fragmentShaderSource2 = """
+    #version 330 core
+    in vec3 vertexColor;
+
+    out vec4 FragColor;
+
+    uniform vec3 vColor;
+
+    void main()
+    {
+        FragColor = vec4(vertexColor * vColor, 1.0f);
     }
 """.trimIndent()
 
@@ -41,5 +71,4 @@ val triangleVertices = floatArrayOf(
     0.0f, -0.5f, 0.0f, // bottom center
     0.5f, -0.5f, 0.0f, // bottom right
     0.25f, 0.5f, 0.0f, // top right-center
-
 )
