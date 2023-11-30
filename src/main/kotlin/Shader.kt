@@ -1,6 +1,42 @@
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30
 
+@Suppress("unused")
+class Shader(vertexShaderPath: String, fragmentShaderPath: String) {
+    private var shaderProgramID = 0
+    private val uniformMap = mutableMapOf<String, Int>()
+
+    init {
+        val vertexShaderSource = javaClass.getResource(vertexShaderPath)?.readText()
+        val fragmentShaderSource = javaClass.getResource(fragmentShaderPath)?.readText()
+        if (vertexShaderSource == null || fragmentShaderSource == null) {
+            println("Vertex shader or fragment shader not found!")
+            window.exit(-1)
+        } else {
+            shaderProgramID = createShaderProgram(vertexShaderSource, fragmentShaderSource)
+        }
+    }
+
+    fun getUniformLocation(uniformName: String): Int {
+        val uniformLocation = GL30.glGetUniformLocation(shaderProgramID, uniformName)
+        uniformMap[uniformName] = uniformLocation
+        return uniformLocation
+    }
+
+    fun setUniform3f(uniformName: String, v1: Float, v2: Float, v3: Float) {
+        val index = uniformMap[uniformName] ?: return
+        GL30.glUniform3f(index, v1, v2, v3)
+    }
+
+    fun get(): Int {
+        return shaderProgramID
+    }
+
+    fun use() {
+        GL30.glUseProgram(shaderProgramID)
+    }
+}
+
 fun createShaderProgram(vertexShaderSource: String, fragmentShaderSource: String): Int {
 
     val vertexShader = createVertexShader(vertexShaderSource)
