@@ -6,13 +6,13 @@ import kotlin.math.sin
 
 fun createProgram(): () -> Unit {
     // Create shader program
-    val shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource)
-    val shaderColorLocation = glGetUniformLocation(shaderProgram, "vColor")
-    val shaderPositionLocation = glGetUniformLocation(shaderProgram, "vPosition")
+    val shaderProgram = Shader("shaders/vertex_v1.glsl", "shaders/fragment_v1.glsl")
+    val shaderColor = shaderProgram.getUniformLocation("vColor")
+    val shaderPosition = shaderProgram.getUniformLocation("vPosition")
 
-    val shaderProgram2 = createShaderProgram(vertexShaderSource2, fragmentShaderSource2)
-    val shaderColorLocation2 = glGetUniformLocation(shaderProgram, "vColor")
-    val shaderPositionLocation2 = glGetUniformLocation(shaderProgram, "vPosition")
+    val shaderProgram2 = Shader("shaders/vertex_v2.glsl", "shaders/fragment_v2.glsl")
+    val shaderColor2 = shaderProgram2.getUniformLocation("vColor")
+    val shaderPosition2 = shaderProgram2.getUniformLocation("vPosition")
 
     // Create square render object
     val squareRenderObject = RenderObject(boxVertices, boxIndices)
@@ -50,15 +50,15 @@ fun createProgram(): () -> Unit {
         glClear(GL_COLOR_BUFFER_BIT)
 
         // Render the objects
-        glUseProgram(shaderProgram)
-        glUniform3f(shaderPositionLocation, 0.5f * cosWave, 0.5f * sineWave, 0f)
-        glUniform3f(shaderColorLocation, 0.8f * sinValue, 0.8f * sinValue2, 0.8f * sinValue3)
+        shaderProgram.use()
+        glUniform3f(shaderPosition, 0.5f * cosWave, 0.5f * sineWave, 0f)
+        glUniform3f(shaderColor, 0.8f * sinValue, 0.8f * sinValue2, 0.8f * sinValue3)
         squareRenderObject.draw()
 
         // Render triangle objects
-        glUseProgram(shaderProgram2)
-        glUniform3f(shaderPositionLocation2, 0.0f, 0.5f * -sawSharp, 0.0f)
-        glUniform3f(shaderColorLocation2, cosValue, cosValue, cosValue)
+        shaderProgram2.use()
+        glUniform3f(shaderPosition2, 0.0f, 0.5f * -sawSharp, 0.0f)
+        glUniform3f(shaderColor2, cosValue, cosValue, cosValue)
         triangleRenderObject.draw()
         triangleRenderObject2.draw()
     }
