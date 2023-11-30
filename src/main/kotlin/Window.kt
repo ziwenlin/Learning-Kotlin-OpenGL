@@ -62,6 +62,9 @@ class Window {
         // Destroy the window abd terminate GLFW
         glfwDestroyWindow(window)
         glfwTerminate()
+        if (status != 0) {
+            Thread.dumpStack()
+        }
         exitProcess(status)
     }
 
