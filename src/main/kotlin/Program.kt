@@ -10,13 +10,15 @@ fun createProgram(): () -> Unit {
     val shaderColorLocation = glGetUniformLocation(shaderProgram, "vColor")
     val shaderPositionLocation = glGetUniformLocation(shaderProgram, "vPosition")
 
-    val shaderProgram2 = createShaderProgram(vertexShaderSource, fragmentShaderSource)
+    val shaderProgram2 = createShaderProgram(vertexShaderSource2, fragmentShaderSource2)
     val shaderColorLocation2 = glGetUniformLocation(shaderProgram, "vColor")
     val shaderPositionLocation2 = glGetUniformLocation(shaderProgram, "vPosition")
 
     // Create square render object
     val squareRenderObject = RenderObject(boxVertices, boxIndices)
-    val triangleRenderObject = SimpleRenderObject(triangleVertices, 3)
+    val triangleVerticesCorrected = addValuesToArray(triangleVertices, 3, 0.8f, 3)
+    val triangleRenderObject = SimpleRenderObject(triangleVerticesCorrected, 6)
+    val triangleRenderObject2 = SimpleRenderObject(triangleVertices2, 6)
 
     // Set the clear color
     glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
@@ -58,6 +60,7 @@ fun createProgram(): () -> Unit {
         glUniform3f(shaderPositionLocation2, 0.0f, 0.5f * -sawSharp, 0.0f)
         glUniform3f(shaderColorLocation2, cosValue, cosValue, cosValue)
         triangleRenderObject.draw()
+        triangleRenderObject2.draw()
     }
     return program
 }

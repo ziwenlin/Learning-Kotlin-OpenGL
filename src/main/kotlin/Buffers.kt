@@ -43,8 +43,13 @@ class SimpleRenderObject(vertices: FloatArray, stride: Int) {
         glBindBuffer(GL_ARRAY_BUFFER, vboID)
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, stride * Float.SIZE_BYTES, 0)
+        val floatSize: Int = Float.SIZE_BYTES
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, stride * floatSize, 0L * floatSize)
         glEnableVertexAttribArray(0)
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, stride * floatSize, 3L * floatSize)
+        glEnableVertexAttribArray(1)
 
         glBindVertexArray(0)
     }
