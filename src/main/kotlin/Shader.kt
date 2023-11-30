@@ -3,7 +3,7 @@ import org.lwjgl.opengl.GL30
 
 @Suppress("unused")
 class Shader(vertexShaderPath: String, fragmentShaderPath: String) {
-    private var shaderProgramID = 0
+    private var programID = 0
     private val uniformMap = mutableMapOf<String, Int>()
 
     init {
@@ -11,29 +11,37 @@ class Shader(vertexShaderPath: String, fragmentShaderPath: String) {
         val fragmentShaderSource = javaClass.getResource(fragmentShaderPath)?.readText()
         if (vertexShaderSource == null || fragmentShaderSource == null) {
             println("Vertex shader or fragment shader not found!")
+            println("Vertex shader source error: ${vertexShaderSource == null}")
+            println("Fragment shader source error: ${fragmentShaderSource == null}")
             window.exit(-1)
         } else {
-            shaderProgramID = createShaderProgram(vertexShaderSource, fragmentShaderSource)
+            programID = createShaderProgram(vertexShaderSource, fragmentShaderSource)
         }
     }
 
-    fun getUniformLocation(uniformName: String): Int {
-        val uniformLocation = GL30.glGetUniformLocation(shaderProgramID, uniformName)
-        uniformMap[uniformName] = uniformLocation
-        return uniformLocation
+    fun getUniformLocation(name: String): Int {
+        val uniformLocationID = GL30.glGetUniformLocation(programID, name)
+        uniformMap[name] = uniformLocationID
+        return uniformLocationID
     }
 
-    fun setUniform3f(uniformName: String, v1: Float, v2: Float, v3: Float) {
-        val index = uniformMap[uniformName] ?: return
+    fun setUniform3f(name: String, v1: Float, v2: Float, v3: Float) {
+        val index = uniformMap[name]
+        if (index == null) {
+            println("There is no uniform called $name in shader $this ID: $programID")
+            uniformMap[name] = -1
+            return
+        }
+        if (index == -1) return
         GL30.glUniform3f(index, v1, v2, v3)
     }
 
     fun get(): Int {
-        return shaderProgramID
+        return programID
     }
 
     fun use() {
-        GL30.glUseProgram(shaderProgramID)
+        GL30.glUseProgram(programID)
     }
 }
 
@@ -58,8 +66,7 @@ fun createFragmentShader(fragmentShaderSource: String): Int {
     if (success != GL30.GL_TRUE) {
         val length = GL30.glGetShaderi(fragmentShader, GL30.GL_INFO_LOG_LENGTH)
         val info = GL20.glGetShaderInfoLog(fragmentShader, length)
-        println(info)
-        println(Error(info))
+        println(Exception(info))
         window.exit(-1)
     }
     return fragmentShader
@@ -75,8 +82,7 @@ fun createVertexShader(vertexShaderSource: String): Int {
     if (success != GL30.GL_TRUE) {
         val length = GL30.glGetShaderi(vertexShader, GL30.GL_INFO_LOG_LENGTH)
         val info = GL20.glGetShaderInfoLog(vertexShader, length)
-        println(info)
-        println(Error(info))
+        println(Exception(info))
         window.exit(-1)
     }
     return vertexShader
@@ -93,8 +99,7 @@ fun linkShaderProgram(vertexShader: Int, fragmentShader: Int): Int {
     if (success != GL30.GL_TRUE) {
         val length = GL30.glGetProgrami(shaderProgram, GL30.GL_INFO_LOG_LENGTH)
         val info = GL20.glGetProgramInfoLog(shaderProgram, length)
-        println(info)
-        println(Error(info))
+        println(Exception(info))
         window.exit(-1)
     }
     return shaderProgram
