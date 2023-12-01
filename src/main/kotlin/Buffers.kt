@@ -2,6 +2,43 @@
 
 import org.lwjgl.opengl.GL30.*
 
+class TexturedRenderObject(vertices: FloatArray, indices: IntArray) {
+    private val vaoID = glGenVertexArrays()
+    private val vboID = glGenBuffers()
+    private val eboID = glGenBuffers()
+
+    private val count = indices.size
+
+    init {
+        glBindVertexArray(vaoID)
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboID)
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW)
+
+        val floatSize: Int = Float.SIZE_BYTES
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * floatSize, 0L * floatSize)
+        glEnableVertexAttribArray(0)
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * floatSize, 3L * floatSize)
+        glEnableVertexAttribArray(1)
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * floatSize, 6L * floatSize)
+        glEnableVertexAttribArray(2)
+
+        glBindVertexArray(0)
+    }
+
+    fun draw() {
+        glBindVertexArray(vaoID)
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0)
+        glBindVertexArray(0)
+    }
+}
+
 class RenderObject(vertices: FloatArray, indices: IntArray) {
     private val vaoID = glGenVertexArrays()
     private val vboID = glGenBuffers()
