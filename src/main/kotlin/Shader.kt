@@ -19,19 +19,30 @@ class Shader(vertexShaderPath: String, fragmentShaderPath: String) {
         }
     }
 
+    private fun getUniformIndex(name: String): Int {
+        val index = uniformMap[name]
+        if (index == null) {
+            println("There is no uniform called $name in shader $this ID: $programID")
+            uniformMap[name] = -1
+            return -1
+        }
+        return index
+    }
+
     fun getUniformLocation(name: String): Int {
         val uniformLocationID = GL30.glGetUniformLocation(programID, name)
         uniformMap[name] = uniformLocationID
         return uniformLocationID
     }
 
+    fun setUniform1i(name: String, value: Int) {
+        val index = getUniformIndex(name)
+        if (index == -1) return
+        GL30.glUniform1i(index, value)
+    }
+
     fun setUniform3f(name: String, v1: Float, v2: Float, v3: Float) {
-        val index = uniformMap[name]
-        if (index == null) {
-            println("There is no uniform called $name in shader $this ID: $programID")
-            uniformMap[name] = -1
-            return
-        }
+        val index = getUniformIndex(name)
         if (index == -1) return
         GL30.glUniform3f(index, v1, v2, v3)
     }
@@ -42,6 +53,10 @@ class Shader(vertexShaderPath: String, fragmentShaderPath: String) {
 
     fun use() {
         GL30.glUseProgram(programID)
+    }
+
+    fun destroy() {
+        GL30.glDeleteShader(programID)
     }
 }
 
