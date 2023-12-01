@@ -1,5 +1,7 @@
 @file:Suppress("unused")
 
+package renderer
+
 import org.lwjgl.opengl.GL30.*
 
 class TexturedRenderObject(vertices: FloatArray, indices: IntArray) {

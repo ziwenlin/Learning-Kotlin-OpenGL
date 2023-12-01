@@ -1,3 +1,5 @@
+package utility
+
 fun addValuesToArray(array: FloatArray, stride: Int, value: Float, amount: Int): FloatArray {
     val list = arrayListOf<Float>()
     for ((i, v) in array.withIndex()) {

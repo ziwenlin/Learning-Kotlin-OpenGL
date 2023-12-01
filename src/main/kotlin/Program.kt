@@ -1,20 +1,22 @@
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL30.*
+import renderer.*
+import utility.*
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
 fun createProgram(): Pair<() -> Unit, () -> Unit> {
     // Create shader program
-    val shaderProgram = Shader("shaders/vertex_v1.glsl", "shaders/fragment_v1.glsl")
+    val shaderProgram = Shader("/shaders/vertex_v1.glsl", "/shaders/fragment_v1.glsl")
     val shaderColor = shaderProgram.getUniformLocation("vColor")
     val shaderPosition = shaderProgram.getUniformLocation("vPosition")
 
-    val shaderProgram2 = Shader("shaders/vertex_v2.glsl", "shaders/fragment_v2.glsl")
+    val shaderProgram2 = Shader("/shaders/vertex_v2.glsl", "/shaders/fragment_v2.glsl")
     val shaderColor2 = shaderProgram2.getUniformLocation("vColor")
     val shaderPosition2 = shaderProgram2.getUniformLocation("vPosition")
 
-    val shaderProgram3 = Shader("shaders/vertex_v3.glsl", "shaders/fragment_v3.glsl")
+    val shaderProgram3 = Shader("/shaders/vertex_v3.glsl", "/shaders/fragment_v3.glsl")
     val shaderTexture3a = shaderProgram3.getUniformLocation("uniformTexture")
     val shaderTexture3b = shaderProgram3.getUniformLocation("uniformTexture2")
     val shaderPosition3 = shaderProgram3.getUniformLocation("uniformPosition")

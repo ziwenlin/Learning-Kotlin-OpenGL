@@ -1,3 +1,5 @@
+package renderer
+
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.glViewport
@@ -12,7 +14,7 @@ class Window {
         return windowID
     }
 
-    fun init() {
+    fun init(width: Int, height: Int) {
         // Initialize GLFW. Most GLFW functions will not work before doing this.
         val glfwInitialize = glfwInit()
         if (glfwInitialize != true) {
@@ -56,7 +58,7 @@ class Window {
         glfwSetKeyCallback(windowID, keyCallback)
 
         // Assigning a window size change callback
-        @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+        @Suppress("UNUSED_ANONYMOUS_PARAMETER", "NAME_SHADOWING")
         val frameSizeCallback = { window: Long, width: Int, height: Int ->
             glViewport(0, 0, width, height)
         }

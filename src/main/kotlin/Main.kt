@@ -1,3 +1,5 @@
+import renderer.Window
+
 /*
 * Main
 *
@@ -11,7 +13,7 @@ fun main(args: Array<String>) {
     println("Hello World!")
     println("Program arguments: ${args.joinToString()}")
 
-    window.init()
+    window.init(width, height)
     val (program, destroy) = createProgram()
     window.setExitCallback(destroy)
     window.loop(program)

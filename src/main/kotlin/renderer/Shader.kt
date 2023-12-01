@@ -1,5 +1,8 @@
+package renderer
+
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30
+import window
 
 @Suppress("unused")
 class Shader(vertexShaderPath: String, fragmentShaderPath: String) {

@@ -1,3 +1,5 @@
+package renderer
+
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.stb.STBImage
 

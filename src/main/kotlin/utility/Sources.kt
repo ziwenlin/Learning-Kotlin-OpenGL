@@ -1,3 +1,4 @@
+package utility
 
 val boxVerticesTextured = floatArrayOf(
     // positions    // colors   // texture coords
