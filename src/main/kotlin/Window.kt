@@ -5,7 +5,11 @@ import org.lwjgl.system.MemoryUtil.*
 import kotlin.system.exitProcess
 
 class Window {
-    private var window: Long = NULL
+    private var windowID: Long = NULL
+
+    fun getID(): Long {
+        return windowID
+    }
 
     fun init() {
         // Initialize GLFW. Most GLFW functions will not work before doing this.
@@ -21,18 +25,18 @@ class Window {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
 
         // Create the window
-        window = glfwCreateWindow(width, height, "Hello World", NULL, NULL)
-        if (window == NULL) {
+        windowID = glfwCreateWindow(width, height, "Hello World", NULL, NULL)
+        if (windowID == NULL) {
             println("Window could not be created!")
             exit(-1)
         }
 
         // Make the window's context current
-        glfwMakeContextCurrent(window)
+        glfwMakeContextCurrent(windowID)
         // Enable v-sync
         glfwSwapInterval(1)
         // Make the window visible
-        glfwShowWindow(window)
+        glfwShowWindow(windowID)
 
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
@@ -48,19 +52,19 @@ class Window {
                 glfwSetWindowShouldClose(window, true)
             }
         }
-        glfwSetKeyCallback(window, keyCallback)
+        glfwSetKeyCallback(windowID, keyCallback)
 
         // Assigning a window size change callback
         @Suppress("UNUSED_ANONYMOUS_PARAMETER")
         val frameSizeCallback = { window: Long, width: Int, height: Int ->
             glViewport(0, 0, width, height)
         }
-        glfwSetFramebufferSizeCallback(window, frameSizeCallback)
+        glfwSetFramebufferSizeCallback(windowID, frameSizeCallback)
     }
 
     fun exit(status: Int) {
         // Destroy the window abd terminate GLFW
-        glfwDestroyWindow(window)
+        glfwDestroyWindow(windowID)
         glfwTerminate()
         if (status != 0) {
             Thread.dumpStack()
@@ -70,11 +74,11 @@ class Window {
 
     fun loop(program: () -> Unit) {
         // Start the window loop
-        while (glfwWindowShouldClose(window) != true) {
+        while (glfwWindowShouldClose(windowID) != true) {
             // Run program
             program()
             // Swap front and back buffers
-            glfwSwapBuffers(window)
+            glfwSwapBuffers(windowID)
             // Poll for and process events
             glfwPollEvents()
         }
