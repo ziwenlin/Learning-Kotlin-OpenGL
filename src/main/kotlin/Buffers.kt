@@ -37,6 +37,12 @@ class TexturedRenderObject(vertices: FloatArray, indices: IntArray) {
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0)
         glBindVertexArray(0)
     }
+
+    fun destroy() {
+        glDeleteVertexArrays(vaoID)
+        glDeleteBuffers(vboID)
+        glDeleteBuffers(eboID)
+    }
 }
 
 class RenderObject(vertices: FloatArray, indices: IntArray) {
@@ -65,6 +71,12 @@ class RenderObject(vertices: FloatArray, indices: IntArray) {
         glBindVertexArray(vaoID)
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0)
         glBindVertexArray(0)
+    }
+
+    fun destroy() {
+        glDeleteVertexArrays(vaoID)
+        glDeleteBuffers(vboID)
+        glDeleteBuffers(eboID)
     }
 }
 
@@ -95,5 +107,10 @@ class SimpleRenderObject(vertices: FloatArray, stride: Int) {
         glBindVertexArray(vaoID)
         glDrawArrays(GL_TRIANGLES, 0, vertexCount)
         glBindVertexArray(0)
+    }
+
+    fun destroy() {
+        glDeleteVertexArrays(vaoID)
+        glDeleteBuffers(vboID)
     }
 }
