@@ -4,7 +4,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-fun createProgram(): () -> Unit {
+fun createProgram(): Pair<() -> Unit, () -> Unit> {
     // Create shader program
     val shaderProgram = Shader("shaders/vertex_v1.glsl", "shaders/fragment_v1.glsl")
     val shaderColor = shaderProgram.getUniformLocation("vColor")
@@ -90,5 +90,20 @@ fun createProgram(): () -> Unit {
         textureAwesome.bind(1)
         squareTexturedRenderObject.draw()
     }
-    return program
+
+    // Create deconstruction program
+    val destroy = { ->
+        shaderProgram.destroy()
+        shaderProgram2.destroy()
+        shaderProgram3.destroy()
+
+        textureContainer.destroy()
+        textureAwesome.destroy()
+
+        squareRenderObject.destroy()
+        squareTexturedRenderObject.destroy()
+        triangleRenderObject.destroy()
+        triangleRenderObject2.destroy()
+    }
+    return Pair(program, destroy)
 }

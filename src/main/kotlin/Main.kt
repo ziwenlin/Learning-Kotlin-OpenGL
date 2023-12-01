@@ -12,7 +12,8 @@ fun main(args: Array<String>) {
     println("Program arguments: ${args.joinToString()}")
 
     window.init()
-    val program = createProgram()
+    val (program, destroy) = createProgram()
+    window.setExitCallback(destroy)
     window.loop(program)
     window.exit(0)
 }
