@@ -6,6 +6,7 @@ import kotlin.system.exitProcess
 
 class Window {
     private var windowID: Long = NULL
+    private var exitCallback = { -> }
 
     fun getID(): Long {
         return windowID
@@ -62,7 +63,13 @@ class Window {
         glfwSetFramebufferSizeCallback(windowID, frameSizeCallback)
     }
 
+    fun setExitCallback(callback: () -> Unit) {
+        exitCallback = callback
+    }
+
     fun exit(status: Int) {
+        // Run exit callback
+        exitCallback()
         // Destroy the window abd terminate GLFW
         glfwDestroyWindow(windowID)
         glfwTerminate()
