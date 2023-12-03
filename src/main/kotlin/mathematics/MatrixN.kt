@@ -8,6 +8,9 @@ class MatrixN {
 
     constructor(numRows: Int, numColumns: Int) : this(numRows, numColumns, FloatArray(numRows * numColumns))
 
+    constructor(vector: Vector3, value: Float) : this(4, 1, vector.toArray(value))
+    constructor(vector: Vector3) : this(3, 1, vector.toArray())
+
     constructor(size: Int, identity: Float) : this(size, size) {
         val range = size - 1
         for (index in 0..range) {
