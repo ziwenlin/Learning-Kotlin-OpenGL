@@ -23,7 +23,7 @@ class MatrixN {
         this.numColumns = numColumns
         this.matrixArray = array
         if (array.size != numRows * numColumns) {
-            throw Exception("Array size does not match matrix size")
+            throw Exception("Array size (${array.size}) does not match matrix size ${numRows}x${numColumns}")
         }
     }
 

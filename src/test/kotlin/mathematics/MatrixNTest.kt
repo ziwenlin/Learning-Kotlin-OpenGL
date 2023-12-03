@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 internal class MatrixNTest {
-    private val matrix4x4Flip = MatrixN(4, 1.0f)
+    private val matrixIdentity = MatrixN(4, 1.0f)
 
     private val matrix3x3 = MatrixN(
         3, 3, floatArrayOf(
@@ -31,14 +31,14 @@ internal class MatrixNTest {
     )
 
     @Test
-    fun constructor_indexing_matrix(){
+    fun constructor_indexing_matrix() {
         val expected = floatArrayOf(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f,
             0f, 0f, 0f, 1f,
         )
-        Assertions.assertArrayEquals(expected, matrix4x4Flip.getArray())
+        Assertions.assertArrayEquals(expected, matrixIdentity.getArray())
     }
 
     @Test
@@ -83,7 +83,8 @@ internal class MatrixNTest {
             0.15f, 2.3f, 0.9f,
         )
         val resultMatrix = (matrix3x3 * matrix3x3).getArray()
-        Assertions.assertArrayEquals(expectedMatrix, resultMatrix)
+        val message = "${expectedMatrix.asList()}\n!=\n${resultMatrix.asList()}\n"
+        Assertions.assertArrayEquals(expectedMatrix, resultMatrix, 0.001f, message)
     }
 
     @Test
@@ -94,18 +95,20 @@ internal class MatrixNTest {
             1.41f
         )
         val resultMatrix = (matrix3x3 * matrix3x1).getArray()
-        Assertions.assertArrayEquals(expectedMatrix, resultMatrix, 0.001f)
+        val message = "${expectedMatrix.asList()}\n!=\n${resultMatrix.asList()}\n"
+        Assertions.assertArrayEquals(expectedMatrix, resultMatrix, 0.001f, message)
     }
 
     @Test
-    fun times_matrix3x1_1x3(){
+    fun times_matrix3x1_1x3() {
         val expectedMatrix = floatArrayOf(
             0.04f, 0.22f, 0.1f,
             0.22f, 1.21f, 0.55f,
             0.1f, 0.55f, 0.25f
         )
         val resultMatrix = (matrix3x1 * matrix1x3).getArray()
-        Assertions.assertArrayEquals(expectedMatrix, resultMatrix, 0.001f)
+        val message = "${expectedMatrix.asList()}\n!=\n${resultMatrix.asList()}\n"
+        Assertions.assertArrayEquals(expectedMatrix, resultMatrix, 0.001f, message)
     }
 
     @Test
@@ -116,8 +119,9 @@ internal class MatrixNTest {
             0.5f,
             0.0f
         )
-        val resultMatrix = (matrix4x4Flip * matrix3x1).getArray()
-        Assertions.assertArrayEquals(expectedMatrix, resultMatrix, 0.001f)
+        val resultMatrix = (matrixIdentity * matrix3x1).getArray()
+        val message = "${expectedMatrix.asList()}\n!=\n${resultMatrix.asList()}\n"
+        Assertions.assertArrayEquals(expectedMatrix, resultMatrix, 0.001f, message)
     }
 
     @Test
