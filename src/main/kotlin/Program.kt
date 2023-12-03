@@ -1,10 +1,15 @@
+import org.joml.Matrix4f
+import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL30.*
 import renderer.*
 import utility.*
+import java.nio.FloatBuffer
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+
+val floatBuffer16: FloatBuffer = BufferUtils.createFloatBuffer(16)
 
 fun createProgram(): Pair<() -> Unit, () -> Unit> {
     // Create shader program
@@ -21,6 +26,13 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     val shaderTexture3b = shaderProgram3.getUniformLocation("uniformTexture2")
     val shaderPosition3 = shaderProgram3.getUniformLocation("uniformPosition")
     val shaderVisibility3 = shaderProgram3.getUniformLocation("uniformVisibility")
+
+    val shaderProgram4 = Shader("/shaders/vertex_v4.glsl", "/shaders/fragment_v4.glsl")
+    val shaderTexture4a = shaderProgram4.getUniformLocation("uTexture1")
+    val shaderTexture4b = shaderProgram4.getUniformLocation("uTexture2")
+    val shaderTransform4 = shaderProgram4.getUniformLocation("mTransform")
+
+    // Create texture
     val textureContainer = Texture("assets/container.jpg")
     val textureAwesome = Texture("assets/awesomeface.png")
 
@@ -78,8 +90,10 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
         // Render triangle objects
         shaderProgram2.use()
         glUniform3f(shaderPosition2, 0.0f, 0.5f * -sawSharp, 0.0f)
-        glUniform3f(shaderColor2, sinValue3, sinValue2, sinValue)
+        glUniform3f(shaderColor2, sinValue2, sinValue2, sinValue2)
         triangleRenderObject.draw()
+        glUniform3f(shaderPosition2, 0.0f, 0.5f * sawSharp, 0.0f)
+        glUniform3f(shaderColor2, sinValue3, sinValue2, sinValue)
         triangleRenderObject2.draw()
 
         // Render texture objects
@@ -90,6 +104,28 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
         glUniform1i(shaderTexture3b, 1)
         textureContainer.bind(0)
         textureAwesome.bind(1)
+        squareTexturedRenderObject.draw()
+
+        // Render texture objects
+        shaderProgram4.use()
+        glUniform1i(shaderTexture4a, 0)
+        glUniform1i(shaderTexture4b, 1)
+        textureContainer.bind(0)
+        textureAwesome.bind(1)
+
+        val radians = Math.toRadians(timeValue * 45).toFloat()
+        Matrix4f()
+            .translate(0.5f * sineWave, -0.5f, 0.0f)
+            .rotate(radians, 0f, 0f, 1f)
+            .get(floatBuffer16)
+        glUniformMatrix4fv(shaderTransform4, false, floatBuffer16)
+        squareTexturedRenderObject.draw()
+
+        Matrix4f()
+            .translate(-0.5f, 0.5f, 0.0f)
+            .scale(sineWave, sineWave, sineWave)
+            .get(floatBuffer16)
+        glUniformMatrix4fv(shaderTransform4, false, floatBuffer16)
         squareTexturedRenderObject.draw()
     }
 
