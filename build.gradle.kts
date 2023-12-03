@@ -33,6 +33,10 @@ application {
     mainClass.set("MainKt")
 }
 
+dependencies {
+    implementation("org.joml:joml:1.10.5")
+}
+
 val lwjglVersion = "3.3.3"
 val lwjglNatives = "natives-windows"
 
