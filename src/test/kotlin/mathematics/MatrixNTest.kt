@@ -76,6 +76,19 @@ internal class MatrixNTest {
     }
 
     @Test
+    fun times_translate() {
+        val expectedMatrix = floatArrayOf(
+            2.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 3.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 4.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f,
+        )
+        val resultMatrix = (matrixIdentity.translate(Vector3(1f,2f,3f).toArray())).getArray()
+        val message = "${expectedMatrix.asList()}\n!=\n${resultMatrix.asList()}\n"
+        Assertions.assertArrayEquals(expectedMatrix, resultMatrix, 0.001f, message)
+    }
+
+    @Test
     fun times() {
         val expectedMatrix = floatArrayOf(
             0.15f, 2.0f, 0.75f,

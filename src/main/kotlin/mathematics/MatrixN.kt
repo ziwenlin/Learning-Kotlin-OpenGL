@@ -67,6 +67,17 @@ class MatrixN {
         return matrix
     }
 
+    fun translate(array: FloatArray): MatrixN {
+        val matrix = MatrixN(numRows, numColumns, matrixArray)
+        for (row in array.indices)  {
+            val value = array[row]
+            for (column in 0.until(numColumns)){
+                if (matrix[row, column] != 0.0f) matrix[row, column] += value
+            }
+        }
+        return matrix
+    }
+
     protected fun getIndex(row: Int, column: Int): Int {
         return row * numColumns + column
     }
