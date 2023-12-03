@@ -6,11 +6,7 @@ class MatrixN {
     private val numColumns: Int
     private val matrixArray: FloatArray
 
-    constructor(numRows: Int, numColumns: Int) {
-        this.numRows = numRows
-        this.numColumns = numColumns
-        this.matrixArray = FloatArray(numRows * numColumns)
-    }
+    constructor(numRows: Int, numColumns: Int) : this(numRows, numColumns, FloatArray(numRows * numColumns))
 
     constructor(size: Int, identity: Float) : this(size, size) {
         val range = size - 1
@@ -24,12 +20,8 @@ class MatrixN {
         this.numColumns = numColumns
         this.matrixArray = array
         if (array.size != numRows * numColumns) {
-            throw Exception()
+            throw Exception("Array size does not match matrix size")
         }
-    }
-
-    fun getArray(): FloatArray {
-        return matrixArray
     }
 
     operator fun get(x: Int, y: Int): Float {
@@ -74,6 +66,10 @@ class MatrixN {
         val row = index / numColumns
         val column = index % numColumns
         return Pair(row, column)
+    }
+
+    fun getArray(): FloatArray {
+        return matrixArray
     }
 
     fun getRows(): Array<FloatArray> {
