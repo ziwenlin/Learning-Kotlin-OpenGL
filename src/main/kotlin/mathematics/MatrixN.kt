@@ -8,6 +8,9 @@ class MatrixN {
 
     constructor(numRows: Int, numColumns: Int) : this(numRows, numColumns, FloatArray(numRows * numColumns))
 
+    constructor(vector: Vector3, value: Float) : this(4, 1, vector.toArray(value))
+    constructor(vector: Vector3) : this(3, 1, vector.toArray())
+
     constructor(size: Int, identity: Float) : this(size, size) {
         val range = size - 1
         for (index in 0..range) {
@@ -22,6 +25,12 @@ class MatrixN {
         if (array.size != numRows * numColumns) {
             throw Exception("Array size does not match matrix size")
         }
+    }
+
+    fun toVector3() : Vector3 {
+        if (numRows != 1 && numColumns != 1)
+            throw Exception("Illegal matrix conversion to vector with size ${numRows}x${numColumns}")
+        return Vector3(getArray())
     }
 
     operator fun get(x: Int, y: Int): Float {

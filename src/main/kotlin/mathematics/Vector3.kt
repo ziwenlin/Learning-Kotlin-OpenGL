@@ -2,12 +2,14 @@ package mathematics
 
 import kotlin.math.sqrt
 
-@Suppress("unused")
 class Vector3 {
 
     var x: Float
     var y: Float
     var z: Float
+
+    constructor(vector: Vector3) : this(vector.x, vector.y, vector.z)
+    constructor(matrix: MatrixN) : this(matrix.toVector3())
 
     constructor(x: Float, y: Float, z: Float) {
         this.x = x
@@ -19,6 +21,14 @@ class Vector3 {
         this.x = array[0]
         this.y = array[1]
         this.z = array[2]
+    }
+
+    fun toMatrix(value: Float): MatrixN {
+        return MatrixN(this, value)
+    }
+
+    fun toMatrix(): MatrixN {
+        return MatrixN(this)
     }
 
     fun toArray(): FloatArray {
