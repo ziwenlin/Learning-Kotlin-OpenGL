@@ -17,7 +17,7 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
 
     // Create texture
     val textureContainer = Texture("assets/container.jpg")
-    val textureAwesome = Texture("assets/awesomeface.png")
+    val textureAwesome = Texture("assets/awesome_face.png")
 
     // Create square render object
     val squareRenderObject = RenderObject(boxVertices, boxIndices)
