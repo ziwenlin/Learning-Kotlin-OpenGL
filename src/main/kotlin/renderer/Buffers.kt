@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package renderer
 
 import org.lwjgl.opengl.GL30.*
@@ -44,6 +42,41 @@ class TexturedRenderObject(vertices: FloatArray, indices: IntArray) {
         glDeleteVertexArrays(vaoID)
         glDeleteBuffers(vboID)
         glDeleteBuffers(eboID)
+    }
+}
+
+class SimpleTexturedRenderObject(vertices: FloatArray, stride: Int) {
+    private val vaoID = glGenVertexArrays()
+    private val vboID = glGenBuffers()
+
+    private val vertexCount = vertices.size / stride
+
+    init {
+        glBindVertexArray(vaoID)
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboID)
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
+
+        val floatSize: Int = Float.SIZE_BYTES
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, stride * floatSize, 0L * floatSize)
+        glEnableVertexAttribArray(0)
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, stride * floatSize, 3L * floatSize)
+        glEnableVertexAttribArray(2)
+
+        glBindVertexArray(0)
+    }
+
+    fun draw() {
+        glBindVertexArray(vaoID)
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount)
+        glBindVertexArray(0)
+    }
+
+    fun destroy() {
+        glDeleteVertexArrays(vaoID)
+        glDeleteBuffers(vboID)
     }
 }
 
