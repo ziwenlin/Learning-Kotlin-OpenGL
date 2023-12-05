@@ -31,19 +31,23 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     glViewport(0, 0, width, height)
 
     // Variables used in the program
-    val field_of_view = Math.toRadians(50.0).toFloat()
-    val aspect_ratio = width.toFloat() / height.toFloat()
-    var angle: Float
+    val fieldOfView = Math.toRadians(50.0).toFloat()
+    val aspectRatio = width.toFloat() / height.toFloat()
 
+    // Activate shader first before uploading matrix to the shader
     shaderProgram.use()
-    var model: Matrix4f
-    val view = Matrix4f()
+    var modelMatrix: Matrix4f
+
+    // Calculation view matrix
+    var viewMatrix = Matrix4f()
         .translate(0f, 0f, -3f)
-    view.get(floatBuffer16)
+    viewMatrix.get(floatBuffer16)
     glUniformMatrix4fv(shaderView, false, floatBuffer16)
-    val projection = Matrix4f()
-        .perspective(field_of_view, aspect_ratio, 0.1f, 100.0f)
-    projection.get(floatBuffer16)
+
+    // Calculation projection matrix
+    val projectionMatrix = Matrix4f()
+        .perspective(fieldOfView, aspectRatio, 0.1f, 100.0f)
+    projectionMatrix.get(floatBuffer16)
     glUniformMatrix4fv(shaderProjection, false, floatBuffer16)
 
     // Create main program
@@ -58,15 +62,18 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
         textureContainer.bind(0)
         textureAwesome.bind(1)
 
+        // Calculation model matrix for every box
         for (index in coordinates3D.indices) {
             // Setup object matrix
-            angle = Math.toRadians(50.0 * index).toFloat()
-            if (index % 3 == 0) angle *= timeValue / 10
-            val axis = Vector3f(1f, 0.3f, 0.5f).normalize()
+            var rotationAngle = Math.toRadians(50.0 * index).toFloat()
+            if (index % 3 == 0) rotationAngle *= timeValue / 10
+            val rotationAxis = Vector3f(1f, 0.3f, 0.5f).normalize()
             val coordinate = Vector3f(coordinates3D[index])
-            model = Matrix4f().translate(coordinate).rotate(angle, axis)
+            modelMatrix = Matrix4f()
+                .translate(coordinate)
+                .rotate(rotationAngle, rotationAxis)
             // Upload matrix to shader
-            model.get(floatBuffer16)
+            modelMatrix.get(floatBuffer16)
             glUniformMatrix4fv(shaderModel, false, floatBuffer16)
             box3DTexturedRenderObject.draw()
         }
