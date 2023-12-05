@@ -1,4 +1,5 @@
 import org.joml.Matrix4f
+import org.joml.Vector3f
 import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL30.*
@@ -10,68 +11,75 @@ val floatBuffer16: FloatBuffer = BufferUtils.createFloatBuffer(16)
 
 fun createProgram(): Pair<() -> Unit, () -> Unit> {
     // Create shader program
-    val shaderProgram4 = Shader("/shaders/vertex_v4.glsl", "/shaders/fragment_v4.glsl")
-    val shaderTexture4a = shaderProgram4.getUniformLocation("uTexture1")
-    val shaderTexture4b = shaderProgram4.getUniformLocation("uTexture2")
-    val shaderTransform4 = shaderProgram4.getUniformLocation("mTransform")
+    val shaderProgram = Shader("/shaders/vertex_v5.glsl", "/shaders/fragment_v4.glsl")
+    val shaderTexture1 = shaderProgram.getUniformLocation("uTexture1")
+    val shaderTexture2 = shaderProgram.getUniformLocation("uTexture2")
+    val shaderProjection = shaderProgram.getUniformLocation("mProjection")
+    val shaderView = shaderProgram.getUniformLocation("mView")
+    val shaderModel = shaderProgram.getUniformLocation("mModel")
 
     // Create texture
     val textureContainer = Texture("assets/container.jpg")
     val textureAwesome = Texture("assets/awesome_face.png")
 
     // Create square render object
-    val squareRenderObject = RenderObject(boxVertices, boxIndices)
-    val squareTexturedRenderObject = TexturedRenderObject(boxVerticesTextured, boxIndices)
+    val box3DTexturedRenderObject = SimpleTexturedRenderObject(boxVertices3D, 5)
 
     // Set the clear color and the view port
+    glEnable(GL_DEPTH_TEST)
     glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
     glViewport(0, 0, width, height)
 
     // Variables used in the program
-    var visibilityValue = 0.2f
+    val field_of_view = Math.toRadians(50.0).toFloat()
+    val aspect_ratio = width.toFloat() / height.toFloat()
+    var angle: Float
+
+    shaderProgram.use()
+    var model: Matrix4f
+    val view = Matrix4f()
+        .translate(0f, 0f, -3f)
+    view.get(floatBuffer16)
+    glUniformMatrix4fv(shaderView, false, floatBuffer16)
+    val projection = Matrix4f()
+        .perspective(field_of_view, aspect_ratio, 0.1f, 100.0f)
+    projection.get(floatBuffer16)
+    glUniformMatrix4fv(shaderProjection, false, floatBuffer16)
 
     // Create main program
     val program = { ->
-        if (glfwGetKey(window.getID(), GLFW_KEY_UP) == GLFW_PRESS) {
-            visibilityValue += 0.1f
-        }
-        if (glfwGetKey(window.getID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-            visibilityValue -= 0.1f
-        }
         // Get time since start
-        val timeValue = glfwGetTime()
+        val timeValue = glfwGetTime().toFloat()
 
-        // Render texture objects
-        shaderProgram4.use()
-        glUniform1i(shaderTexture4a, 0)
-        glUniform1i(shaderTexture4b, 1)
+        // Setup shader program with texture objects
+        shaderProgram.use()
+        glUniform1i(shaderTexture1, 0)
+        glUniform1i(shaderTexture2, 1)
         textureContainer.bind(0)
         textureAwesome.bind(1)
 
-        val radians = Math.toRadians(timeValue * 45).toFloat()
-        Matrix4f()
-            .translate(0.5f * sineWave, -0.5f, 0.0f)
-            .rotate(radians, 0f, 0f, 1f)
-            .get(floatBuffer16)
-        glUniformMatrix4fv(shaderTransform4, false, floatBuffer16)
-        squareTexturedRenderObject.draw()
-
-        Matrix4f()
-            .translate(-0.5f, 0.5f, 0.0f)
-            .scale(sineWave, sineWave, sineWave)
-            .get(floatBuffer16)
-        glUniformMatrix4fv(shaderTransform4, false, floatBuffer16)
-        squareTexturedRenderObject.draw()
+        for (index in coordinates3D.indices) {
+            // Setup object matrix
+            angle = Math.toRadians(50.0 * index).toFloat()
+            if (index % 3 == 0) angle *= timeValue / 10
+            val axis = Vector3f(1f, 0.3f, 0.5f).normalize()
+            val coordinate = Vector3f(coordinates3D[index])
+            model = Matrix4f().translate(coordinate).rotate(angle, axis)
+            // Upload matrix to shader
+            model.get(floatBuffer16)
+            glUniformMatrix4fv(shaderModel, false, floatBuffer16)
+            box3DTexturedRenderObject.draw()
+        }
     }
 
     // Create deconstruction program
     val destroy = { ->
-        shaderProgram4.destroy()
+        shaderProgram.destroy()
 
         textureContainer.destroy()
         textureAwesome.destroy()
 
-        squareTexturedRenderObject.destroy()
+        box3DTexturedRenderObject.destroy()
     }
     return Pair(program, destroy)
 }
