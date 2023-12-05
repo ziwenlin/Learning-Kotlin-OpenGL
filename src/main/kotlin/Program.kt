@@ -41,9 +41,6 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
         // Get time since start
         val timeValue = glfwGetTime()
 
-        // Render here
-        glClear(GL_COLOR_BUFFER_BIT)
-
         // Render texture objects
         shaderProgram4.use()
         glUniform1i(shaderTexture4a, 0)

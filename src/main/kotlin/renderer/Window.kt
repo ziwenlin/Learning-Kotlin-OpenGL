@@ -3,6 +3,7 @@ package renderer
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.glViewport
+import org.lwjgl.opengl.GL30
 import org.lwjgl.system.MemoryUtil.*
 import kotlin.system.exitProcess
 
@@ -84,6 +85,9 @@ class Window {
     fun loop(program: () -> Unit) {
         // Start the window loop
         while (glfwWindowShouldClose(windowID) != true) {
+            // Clear screen here
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT)
+            GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT)
             // Run program
             program()
             // Swap front and back buffers
