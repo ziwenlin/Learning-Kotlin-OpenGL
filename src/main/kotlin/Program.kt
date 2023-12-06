@@ -1,3 +1,5 @@
+import org.joml.Math.cos
+import org.joml.Math.sin
 import org.joml.Math.toRadians
 import org.joml.Matrix4f
 import org.joml.Vector3f
@@ -42,6 +44,9 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     var cameraFront = Vector3f(0f, 0f, -1f)
     val cameraUp = Vector3f(0f, 1f, 0f)
 
+    var cameraPitch = 0.0f
+    var cameraYaw = 180.0f
+
     // Activate shader first before uploading matrix to the shader
     shaderProgram.use()
     var modelMatrix: Matrix4f
@@ -57,6 +62,36 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
         .perspective(fieldOfView, aspectRatio, 0.1f, 100.0f)
     projectionMatrix.get(floatBuffer16)
     glUniformMatrix4fv(shaderProjection, false, floatBuffer16)
+
+    var mouseDetected = false
+    var lastX = width.toDouble() / 2
+    var lastY = height.toDouble() / 2
+    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+    val mouseCallback = { window: Long, mouseX: Double, mouseY: Double ->
+        if (mouseDetected == false) {
+            mouseDetected = true
+            lastX = mouseX
+            lastY = mouseY
+        }
+        val offsetX = lastX - mouseX
+        val offsetY = lastY - mouseY
+        lastX = mouseX
+        lastY = mouseY
+        cameraYaw += offsetX.toFloat() * 0.1f
+        cameraPitch += offsetY.toFloat() * 0.1f
+
+        // Calculate camera angles
+        if (cameraPitch > 89f) cameraPitch = 89f
+        if (cameraPitch < -89f) cameraPitch = -89f
+
+        val cameraFrontDirection = Vector3f()
+        cameraFrontDirection.x = sin(toRadians(cameraYaw)) * cos(toRadians(cameraPitch))
+        cameraFrontDirection.y = sin(toRadians(cameraPitch))
+        cameraFrontDirection.z = cos(toRadians(cameraYaw)) * cos(toRadians(cameraPitch))
+        cameraFront = cameraFrontDirection.normalize()
+    }
+    glfwSetCursorPosCallback(window.getID(), mouseCallback)
+    glfwSetInputMode(window.getID(), GLFW_CURSOR, GLFW_CURSOR_DISABLED)
 
     // Callback for zooming in and out with the scroll wheel
     val minimumFoV = toRadians(1.0f)
@@ -100,7 +135,7 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     }
 
     // Create main program
-    val program = { ->
+    val program = {
         // Get time since start
         val timeValue = glfwGetTime().toFloat()
         timeDelta = timeValue - timeLast
@@ -146,7 +181,7 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     }
 
     // Create deconstruction program
-    val destroy = { ->
+    val destroy = {
         shaderProgram.destroy()
 
         textureContainer.destroy()
