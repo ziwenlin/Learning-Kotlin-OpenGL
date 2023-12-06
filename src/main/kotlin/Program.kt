@@ -1,3 +1,4 @@
+import org.joml.Math.toRadians
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.BufferUtils
@@ -31,7 +32,7 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     glViewport(0, 0, width, height)
 
     // Variables used in the program
-    val fieldOfView = Math.toRadians(50.0).toFloat()
+    var fieldOfView = toRadians(45.0f)
     val aspectRatio = width.toFloat() / height.toFloat()
 
     // Activate shader first before uploading matrix to the shader
@@ -45,10 +46,23 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     glUniformMatrix4fv(shaderView, false, floatBuffer16)
 
     // Calculation projection matrix
-    val projectionMatrix = Matrix4f()
+    var projectionMatrix = Matrix4f()
         .perspective(fieldOfView, aspectRatio, 0.1f, 100.0f)
     projectionMatrix.get(floatBuffer16)
     glUniformMatrix4fv(shaderProjection, false, floatBuffer16)
+
+    // Callback for zooming in and out with the scroll wheel
+    val minimumFoV = toRadians(1.0f)
+    val maximumFoV = toRadians(45.0f)
+    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+    val scrollCallback = { window: Long, scrollX: Double, scrollY: Double ->
+        fieldOfView -= toRadians(scrollY).toFloat()
+        if (fieldOfView < minimumFoV)
+            fieldOfView = minimumFoV
+        if (fieldOfView > maximumFoV)
+            fieldOfView = maximumFoV
+    }
+    glfwSetScrollCallback(window.getID(), scrollCallback)
 
     // Create main program
     val program = { ->
@@ -61,6 +75,12 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
         glUniform1i(shaderTexture2, 1)
         textureContainer.bind(0)
         textureAwesome.bind(1)
+
+        // Calculation projection matrix
+        projectionMatrix = Matrix4f()
+            .perspective(fieldOfView, aspectRatio, 0.1f, 100.0f)
+        projectionMatrix.get(floatBuffer16)
+        glUniformMatrix4fv(shaderProjection, false, floatBuffer16)
 
         // Calculation model matrix for every box
         for (index in coordinates3D.indices) {
