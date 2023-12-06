@@ -16,11 +16,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-}
-
 tasks.withType<Test> {
     useJUnitPlatform()
     maxParallelForks = Runtime.getRuntime().availableProcessors()
@@ -43,6 +38,7 @@ tasks.withType<Jar> {
     // To add all dependencies
     from(sourceSets.main.get().output)
 
+    // This error is likely due to the fact that the simple jar task doesn't take all its runtime dependencies
     dependsOn(configurations.runtimeClasspath)
     from({
         configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
@@ -63,14 +59,14 @@ tasks.register<Zip>("zip") {
     dependsOn("copy")
 }
 
-dependencies {
-    implementation("org.joml:joml:1.10.5")
-}
-
 val lwjglVersion = "3.3.3"
 val lwjglNatives = "natives-windows"
 
 dependencies {
+    testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+
+    implementation("org.joml:joml:1.10.5")
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
     implementation("org.lwjgl", "lwjgl")
