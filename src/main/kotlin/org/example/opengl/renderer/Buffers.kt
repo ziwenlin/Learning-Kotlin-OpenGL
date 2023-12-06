@@ -1,4 +1,4 @@
-package renderer
+package org.example.opengl.renderer
 
 import org.lwjgl.opengl.GL30.*
 

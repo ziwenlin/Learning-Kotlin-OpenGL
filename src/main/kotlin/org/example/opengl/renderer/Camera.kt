@@ -1,4 +1,4 @@
-package renderer
+package org.example.opengl.renderer
 
 import org.joml.Math.*
 import org.joml.Matrix4f

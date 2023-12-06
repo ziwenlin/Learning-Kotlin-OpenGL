@@ -1,4 +1,4 @@
-package renderer
+package org.example.opengl.renderer
 
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*

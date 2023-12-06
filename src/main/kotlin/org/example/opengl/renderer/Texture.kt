@@ -1,11 +1,11 @@
-package renderer
+package org.example.opengl.renderer
 
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.stb.STBImage
 
 @Suppress("unused")
 class Texture(path: String) {
-    val textureID = glGenTextures()
+    private val textureID = glGenTextures()
 
     init {
         glBindTexture(GL_TEXTURE_2D, textureID)

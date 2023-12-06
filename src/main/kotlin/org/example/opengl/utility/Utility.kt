@@ -1,4 +1,4 @@
-package utility
+package org.example.opengl.utility
 
 fun addValuesToArray(array: FloatArray, stride: Int, value: Float, amount: Int): FloatArray {
     val list = arrayListOf<Float>()

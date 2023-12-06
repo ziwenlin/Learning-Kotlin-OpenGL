@@ -5,7 +5,11 @@ plugins {
     application
 }
 
-group = "org.example"
+application {
+    mainClass.set("org.example.opengl.MainKt")
+}
+
+group = "org.example.opengl"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -29,9 +33,6 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-application {
-    mainClass.set("MainKt")
-}
 
 dependencies {
     implementation("org.joml:joml:1.10.5")

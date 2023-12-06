@@ -1,4 +1,4 @@
-package utility
+package org.example.opengl.utility
 
 val coordinates3D = arrayOf(
     floatArrayOf( 0.0f, 0.0f, 0.0f),

@@ -1,3 +1,11 @@
+package org.example.opengl
+
+import org.example.opengl.renderer.Camera
+import org.example.opengl.renderer.Shader
+import org.example.opengl.renderer.SimpleTexturedRenderObject
+import org.example.opengl.renderer.Texture
+import org.example.opengl.utility.boxVertices3D
+import org.example.opengl.utility.coordinates3D
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.BufferUtils
@@ -7,12 +15,6 @@ import org.lwjgl.opengl.GL30.glEnable
 import org.lwjgl.opengl.GL30.glUniform1i
 import org.lwjgl.opengl.GL30.glUniformMatrix4fv
 import org.lwjgl.opengl.GL30.glViewport
-import renderer.Camera
-import renderer.Shader
-import renderer.SimpleTexturedRenderObject
-import renderer.Texture
-import utility.boxVertices3D
-import utility.coordinates3D
 import java.nio.FloatBuffer
 
 val floatBuffer16: FloatBuffer = BufferUtils.createFloatBuffer(16)

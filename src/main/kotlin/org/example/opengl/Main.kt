@@ -1,4 +1,6 @@
-import renderer.Window
+package org.example.opengl
+
+import org.example.opengl.renderer.Window
 
 /*
 * Main
