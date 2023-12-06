@@ -1,6 +1,8 @@
 package renderer
 
+import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
+import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.glViewport
 import org.lwjgl.opengl.GL30
@@ -16,6 +18,10 @@ class Window {
     }
 
     fun init(width: Int, height: Int) {
+        // Setup an error callback. The default implementation
+        // will print the error message in System.err.
+        GLFWErrorCallback.createPrint(System.err).set()
+
         // Initialize GLFW. Most GLFW functions will not work before doing this.
         val glfwInitialize = glfwInit()
         if (glfwInitialize != true) {
@@ -75,7 +81,9 @@ class Window {
         exitCallback()
         // Destroy the window abd terminate GLFW
         glfwDestroyWindow(windowID)
+        Callbacks.glfwFreeCallbacks(windowID)
         glfwTerminate()
+        glfwSetErrorCallback(null)?.free()
         if (status != 0) {
             Thread.dumpStack()
         }
@@ -95,5 +103,9 @@ class Window {
             // Poll for and process events
             glfwPollEvents()
         }
+    }
+
+    fun getTime(): Float {
+        return glfwGetTime().toFloat()
     }
 }
