@@ -34,6 +34,8 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     // Variables used in the program
     var fieldOfView = toRadians(45.0f)
     val aspectRatio = width.toFloat() / height.toFloat()
+    var timeDelta = 0.0f
+    var timeLast = 0.0f
 
     // Variables used for the camera
     val cameraPosition = Vector3f(0f, 0f, 3f)
@@ -69,10 +71,43 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     }
     glfwSetScrollCallback(window.getID(), scrollCallback)
 
+    val keyInputProcessing = { window: Long ->
+        val cameraSpeed = 2.5f * timeDelta
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            cameraPosition.sub(
+                Vector3f(cameraFront)
+                    .cross(cameraUp).normalize()
+                    .mul(cameraSpeed)
+            )
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            cameraPosition.add(
+                Vector3f(cameraFront)
+                    .cross(cameraUp).normalize()
+                    .mul(cameraSpeed)
+            )
+        }
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            cameraPosition.add(
+                Vector3f(cameraFront).mul(cameraSpeed)
+            )
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            cameraPosition.sub(
+                Vector3f(cameraFront).mul(cameraSpeed)
+            )
+        }
+    }
+
     // Create main program
     val program = { ->
         // Get time since start
         val timeValue = glfwGetTime().toFloat()
+        timeDelta = timeValue - timeLast
+        timeLast = timeValue
+
+        // Process key inputs
+        keyInputProcessing(window.getID())
 
         // Setup shader program with texture objects
         shaderProgram.use()
