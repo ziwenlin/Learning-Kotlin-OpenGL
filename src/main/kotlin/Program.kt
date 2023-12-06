@@ -35,6 +35,11 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     var fieldOfView = toRadians(45.0f)
     val aspectRatio = width.toFloat() / height.toFloat()
 
+    // Variables used for the camera
+    val cameraPosition = Vector3f(0f, 0f, 3f)
+    var cameraFront = Vector3f(0f, 0f, -1f)
+    val cameraUp = Vector3f(0f, 1f, 0f)
+
     // Activate shader first before uploading matrix to the shader
     shaderProgram.use()
     var modelMatrix: Matrix4f
@@ -75,6 +80,12 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
         glUniform1i(shaderTexture2, 1)
         textureContainer.bind(0)
         textureAwesome.bind(1)
+
+        // Calculation view matrix
+        val cameraDirection = Vector3f(cameraPosition).add(cameraFront)
+        viewMatrix = Matrix4f().lookAt(cameraPosition, cameraDirection, cameraUp)
+        viewMatrix.get(floatBuffer16)
+        glUniformMatrix4fv(shaderView, false, floatBuffer16)
 
         // Calculation projection matrix
         projectionMatrix = Matrix4f()
