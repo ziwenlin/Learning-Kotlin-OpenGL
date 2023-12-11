@@ -14,9 +14,9 @@ class Camera(width: Int, height: Int) {
     var timeLast = 0.0f
 
     // Variables used for the camera
-    val Position = Vector3f(0f, 0f, 3f)
-    var Front = Vector3f(0f, 0f, -1f)
-    val Up = Vector3f(0f, 1f, 0f)
+    val Position = Vector3f(3f, 0f, 0f)
+    var Front = Vector3f(-1f, 0f, 0f)
+    val Up = Vector3f(0f, 0f, 1f)
     var Pitch = 0.0f
     var Yaw = 180.0f
 
@@ -41,10 +41,18 @@ class Camera(width: Int, height: Int) {
             )
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            Position.add(Vector3f(Front).mul(cameraSpeed))
+            Position.add(
+                Vector3f(Front.x, Front.y, 0f)
+                    .normalize()
+                    .mul(cameraSpeed)
+            )
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            Position.sub(Vector3f(Front).mul(cameraSpeed))
+            Position.sub(
+                Vector3f(Front.x, Front.y, 0f)
+                    .normalize()
+                    .mul(cameraSpeed)
+            )
         }
     }
 
@@ -73,9 +81,9 @@ class Camera(width: Int, height: Int) {
             val yaw = toRadians(Yaw)
 
             val cameraDirection = Vector3f()
-            cameraDirection.x = sin(yaw) * cos(pitch)
-            cameraDirection.y = sin(pitch)
-            cameraDirection.z = cos(yaw) * cos(pitch)
+            cameraDirection.x = cos(yaw) * cos(pitch)
+            cameraDirection.y = sin(yaw) * cos(pitch)
+            cameraDirection.z = sin(pitch)
             Front = cameraDirection.normalize()
         }
         glfwSetCursorPosCallback(window, processMouseMovement)
