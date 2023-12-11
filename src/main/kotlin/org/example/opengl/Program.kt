@@ -17,9 +17,9 @@ import org.lwjgl.opengl.GL30.glUniformMatrix4fv
 import org.lwjgl.opengl.GL30.glViewport
 import java.nio.FloatBuffer
 
-val floatBuffer16: FloatBuffer = BufferUtils.createFloatBuffer(16)
+class Program {
+    val floatBuffer16: FloatBuffer = BufferUtils.createFloatBuffer(16)
 
-fun createProgram(): Pair<() -> Unit, () -> Unit> {
     // Create shader program
     val shaderProgram = Shader("/shaders/vertex_v5.glsl", "/shaders/fragment_v4.glsl")
     val shaderTexture1 = shaderProgram.getUniformLocation("uTexture1")
@@ -35,18 +35,21 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
     // Create square render object
     val box3DTexturedRenderObject = SimpleTexturedRenderObject(boxVertices3D, 5)
 
-    // Set the clear color and the view port
-    glEnable(GL_DEPTH_TEST)
-    glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
-    glViewport(0, 0, width, height)
-
-    // Variables used in the program
+    // Create the camera object
     val camera = Camera(width, height)
-    camera.setMouseCallback(window.getID())
-    camera.setScrollCallback(window.getID())
 
-    // Create main program
-    val program = {
+    init {
+        // Set the clear color and the view port
+        glEnable(GL_DEPTH_TEST)
+        glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
+        glViewport(0, 0, width, height)
+
+        // Set camera callbacks
+        camera.setMouseCallback(window.getID())
+        camera.setScrollCallback(window.getID())
+    }
+
+    fun run() {
         // Get time since start
         val timeValue = window.getTime()
 
@@ -86,8 +89,7 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
         }
     }
 
-    // Create deconstruction program
-    val destroy = {
+    fun destroy() {
         shaderProgram.destroy()
 
         textureContainer.destroy()
@@ -95,5 +97,4 @@ fun createProgram(): Pair<() -> Unit, () -> Unit> {
 
         box3DTexturedRenderObject.destroy()
     }
-    return Pair(program, destroy)
 }
