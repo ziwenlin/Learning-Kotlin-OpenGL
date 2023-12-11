@@ -9,12 +9,7 @@ import org.example.opengl.utility.coordinates3D
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.BufferUtils
-import org.lwjgl.opengl.GL30.GL_DEPTH_TEST
-import org.lwjgl.opengl.GL30.glClearColor
-import org.lwjgl.opengl.GL30.glEnable
-import org.lwjgl.opengl.GL30.glUniform1i
-import org.lwjgl.opengl.GL30.glUniformMatrix4fv
-import org.lwjgl.opengl.GL30.glViewport
+import org.lwjgl.opengl.GL30
 import java.nio.FloatBuffer
 
 class Program {
@@ -40,10 +35,9 @@ class Program {
 
     init {
         // Set the clear color and the view port
-        glEnable(GL_DEPTH_TEST)
-        glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
-        glViewport(0, 0, width, height)
-
+        GL30.glEnable(GL32.GL_PROGRAM_POINT_SIZE)
+        GL30.glEnable(GL30.GL_DEPTH_TEST)
+        GL30.glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
         // Set camera callbacks
         camera.setMouseCallback(window.getID())
         camera.setScrollCallback(window.getID())
@@ -58,18 +52,18 @@ class Program {
 
         // Setup shader program with texture objects
         shaderProgram.use()
-        glUniform1i(shaderTexture1, 0)
-        glUniform1i(shaderTexture2, 1)
+        GL30.glUniform1i(shaderTexture1, 0)
+        GL30.glUniform1i(shaderTexture2, 1)
         textureContainer.bind(0)
         textureAwesome.bind(1)
 
         // Calculation view matrix
         camera.getViewMatrix().get(floatBuffer16)
-        glUniformMatrix4fv(shaderView, false, floatBuffer16)
+        GL30.glUniformMatrix4fv(shaderView, false, floatBuffer16)
 
         // Calculation projection matrix
         camera.getProjectionMatrix().get(floatBuffer16)
-        glUniformMatrix4fv(shaderProjection, false, floatBuffer16)
+        GL30.glUniformMatrix4fv(shaderProjection, false, floatBuffer16)
 
         // Calculation model matrix for every box
         var modelMatrix: Matrix4f
@@ -84,7 +78,7 @@ class Program {
                 .rotate(rotationAngle, rotationAxis)
             // Upload matrix to shader
             modelMatrix.get(floatBuffer16)
-            glUniformMatrix4fv(shaderModel, false, floatBuffer16)
+            GL30.glUniformMatrix4fv(shaderModel, false, floatBuffer16)
             box3DTexturedRenderObject.draw()
         }
     }
