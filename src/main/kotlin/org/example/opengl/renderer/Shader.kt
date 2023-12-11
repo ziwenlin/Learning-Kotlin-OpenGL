@@ -1,11 +1,12 @@
 package org.example.opengl.renderer
 
+import org.example.opengl.constructor.Destroyable
 import org.example.opengl.utility.createShaderProgram
 import org.example.opengl.window
 import org.lwjgl.opengl.GL30
 
 @Suppress("unused")
-class Shader(vertexShaderPath: String, fragmentShaderPath: String) {
+class Shader(vertexShaderPath: String, fragmentShaderPath: String) : Destroyable {
     private var programID = 0
     private val uniformMap = mutableMapOf<String, Int>()
 
@@ -58,7 +59,7 @@ class Shader(vertexShaderPath: String, fragmentShaderPath: String) {
         GL30.glUseProgram(programID)
     }
 
-    fun destroy() {
+    override fun destroy() {
         GL30.glDeleteShader(programID)
     }
 }

@@ -1,8 +1,9 @@
 package org.example.opengl.renderer
 
+import org.example.opengl.constructor.Destroyable
 import org.lwjgl.opengl.GL30.*
 
-class TexturedRenderObject(vertices: FloatArray, indices: IntArray) {
+class TexturedRenderObject(vertices: FloatArray, indices: IntArray)  : Destroyable{
     private val vaoID = glGenVertexArrays()
     private val vboID = glGenBuffers()
     private val eboID = glGenBuffers()
@@ -38,14 +39,14 @@ class TexturedRenderObject(vertices: FloatArray, indices: IntArray) {
         glBindVertexArray(0)
     }
 
-    fun destroy() {
+    override fun destroy() {
         glDeleteVertexArrays(vaoID)
         glDeleteBuffers(vboID)
         glDeleteBuffers(eboID)
     }
 }
 
-class SimpleTexturedRenderObject(vertices: FloatArray, stride: Int) {
+class SimpleTexturedRenderObject(vertices: FloatArray, stride: Int) : Destroyable {
     private val vaoID = glGenVertexArrays()
     private val vboID = glGenBuffers()
 
@@ -74,13 +75,13 @@ class SimpleTexturedRenderObject(vertices: FloatArray, stride: Int) {
         glBindVertexArray(0)
     }
 
-    fun destroy() {
+    override fun destroy() {
         glDeleteVertexArrays(vaoID)
         glDeleteBuffers(vboID)
     }
 }
 
-class RenderObject(vertices: FloatArray, indices: IntArray) {
+class RenderObject(vertices: FloatArray, indices: IntArray) : Destroyable {
     private val vaoID = glGenVertexArrays()
     private val vboID = glGenBuffers()
     private val eboID = glGenBuffers()
@@ -108,14 +109,14 @@ class RenderObject(vertices: FloatArray, indices: IntArray) {
         glBindVertexArray(0)
     }
 
-    fun destroy() {
+    override fun destroy() {
         glDeleteVertexArrays(vaoID)
         glDeleteBuffers(vboID)
         glDeleteBuffers(eboID)
     }
 }
 
-class SimpleRenderObject(vertices: FloatArray, stride: Int) {
+class SimpleRenderObject(vertices: FloatArray, stride: Int) : Destroyable {
     private val vaoID = glGenVertexArrays()
     private val vboID = glGenBuffers()
 
@@ -144,7 +145,7 @@ class SimpleRenderObject(vertices: FloatArray, stride: Int) {
         glBindVertexArray(0)
     }
 
-    fun destroy() {
+    override fun destroy() {
         glDeleteVertexArrays(vaoID)
         glDeleteBuffers(vboID)
     }

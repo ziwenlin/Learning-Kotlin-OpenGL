@@ -1,10 +1,11 @@
 package org.example.opengl.renderer
 
+import org.example.opengl.constructor.Destroyable
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.stb.STBImage
 
 @Suppress("unused")
-class Texture(path: String) {
+class Texture(path: String) : Destroyable {
     private val textureID = glGenTextures()
 
     init {
@@ -44,7 +45,7 @@ class Texture(path: String) {
         glBindTexture(GL_TEXTURE_2D, 0)
     }
 
-    fun destroy() {
+    override fun destroy() {
         glDeleteTextures(textureID)
     }
 }
