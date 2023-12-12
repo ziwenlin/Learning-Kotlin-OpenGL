@@ -49,7 +49,7 @@ class TextLoader(font: Font) : Destroyable {
         for (character in text) {
             if (character == '\n') {
                 /* Line feed, set x and y to draw at the next line */
-                drawY1 -= font.height
+                drawY1 -= height
                 drawX1 = x.toFloat()
                 continue
             }
