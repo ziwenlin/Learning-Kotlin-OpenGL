@@ -2,6 +2,7 @@ package org.example.opengl
 
 import org.example.opengl.renderer.text.TextRenderer
 import org.example.opengl.constructor.Manager
+import org.example.opengl.controller.Keyboard
 import org.example.opengl.renderer.Camera
 import org.example.opengl.renderer.Shader
 import org.example.opengl.renderer.SimpleTexturedRenderObject
@@ -41,6 +42,7 @@ class Program {
 
     // Create the camera object
     val camera = Camera(width, height)
+    val keyboard = Keyboard(window.getID())
     val textRenderer = TextRenderer(Font(Font.MONOSPACED, Font.PLAIN, 20))
 
     // Objects used in simulation
@@ -81,6 +83,11 @@ class Program {
 
         // Process key inputs
         camera.processKeyboardInput(window.getID())
+
+        // Processing keyboard inputs
+        if (keyboard.press('H')) {
+            println("Hello World!")
+        }
 
         // Setup shader program with texture objects
         shaderMain.use()
