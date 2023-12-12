@@ -45,7 +45,7 @@ class Program {
     val keyboard = Keyboard(window.getID())
     val textRenderer = TextRenderer(Font(Font.MONOSPACED, Font.PLAIN, 20))
 
-    // Objects used in simulation
+    // Create resource managers
     val resourceManager = Manager()
 
     init {
@@ -121,14 +121,17 @@ class Program {
             box3DTexturedRenderObject.draw()
         }
 
+        // Gather performance statistics
         val interval = camera.timeDelta
-        val fps = 1f / interval
+        val statistics = """
+            fps: ${1f / interval}
+            interval: ${interval}
+        """.trimIndent()
 
         shaderText.use()
         GL30.glUniform1i(shaderTextTexture, 0)
         GL30.glUniform3f(shaderTextColor, 0.5f, 1.0f, 0.5f)
-        textRenderer.draw("fps: ${fps}", 40f, 20f, 10, 550)
-        textRenderer.draw("interval: ${interval}", 40f, 20f, 10, 500)
+        textRenderer.draw(statistics, 40f, 20f, 10, 550)
 
     }
 
