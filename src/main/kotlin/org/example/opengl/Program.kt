@@ -1,6 +1,7 @@
 package org.example.opengl
 
 import org.example.opengl.renderer.text.TextRenderer
+import org.example.opengl.constructor.Manager
 import org.example.opengl.renderer.Camera
 import org.example.opengl.renderer.Shader
 import org.example.opengl.renderer.SimpleTexturedRenderObject
@@ -19,12 +20,12 @@ class Program {
     val floatBuffer16: FloatBuffer = BufferUtils.createFloatBuffer(16)
 
     // Create shader program
-    val shaderProgram = Shader("/shaders/vertex_v5.glsl", "/shaders/fragment_v4.glsl")
-    val shaderTexture1 = shaderProgram.getUniformLocation("uTexture1")
-    val shaderTexture2 = shaderProgram.getUniformLocation("uTexture2")
-    val shaderProjection = shaderProgram.getUniformLocation("mProjection")
-    val shaderView = shaderProgram.getUniformLocation("mView")
-    val shaderModel = shaderProgram.getUniformLocation("mModel")
+    val shaderMain = Shader("/shaders/vertex_v5.glsl", "/shaders/fragment_v4.glsl")
+    val shaderMainTexture1 = shaderMain.getUniformLocation("uTexture1")
+    val shaderMainTexture2 = shaderMain.getUniformLocation("uTexture2")
+    val shaderMainProjection = shaderMain.getUniformLocation("mProjection")
+    val shaderMainView = shaderMain.getUniformLocation("mView")
+    val shaderMainModel = shaderMain.getUniformLocation("mModel")
 
     val shaderText = Shader("/shaders/text/vertex.glsl", "/shaders/text/fragment.glsl")
     val shaderTextProjection = shaderText.getUniformLocation("Projection")
@@ -42,7 +43,17 @@ class Program {
     val camera = Camera(width, height)
     val textRenderer = TextRenderer(Font(Font.MONOSPACED, Font.PLAIN, 20))
 
+    // Objects used in simulation
+    val resourceManager = Manager()
+
     init {
+        resourceManager.add(shaderText)
+        resourceManager.add(textRenderer)
+        resourceManager.add(shaderMain)
+        resourceManager.add(textureContainer)
+        resourceManager.add(textureAwesome)
+        resourceManager.add(box3DTexturedRenderObject)
+
         // Set the clear color and the view port
         GL30.glEnable(GL32.GL_PROGRAM_POINT_SIZE)
         GL30.glEnable(GL30.GL_DEPTH_TEST)
@@ -72,19 +83,19 @@ class Program {
         camera.processKeyboardInput(window.getID())
 
         // Setup shader program with texture objects
-        shaderProgram.use()
-        GL30.glUniform1i(shaderTexture1, 0)
-        GL30.glUniform1i(shaderTexture2, 1)
+        shaderMain.use()
+        GL30.glUniform1i(shaderMainTexture1, 0)
+        GL30.glUniform1i(shaderMainTexture2, 1)
         textureContainer.bind(0)
         textureAwesome.bind(1)
 
         // Calculation view matrix
         camera.getViewMatrix().get(floatBuffer16)
-        GL30.glUniformMatrix4fv(shaderView, false, floatBuffer16)
+        GL30.glUniformMatrix4fv(shaderMainView, false, floatBuffer16)
 
         // Calculation projection matrix
         camera.getProjectionMatrix().get(floatBuffer16)
-        GL30.glUniformMatrix4fv(shaderProjection, false, floatBuffer16)
+        GL30.glUniformMatrix4fv(shaderMainProjection, false, floatBuffer16)
 
         // Calculation model matrix for every box
         var modelMatrix: Matrix4f
@@ -99,7 +110,7 @@ class Program {
                 .rotate(rotationAngle, rotationAxis)
             // Upload matrix to shader
             modelMatrix.get(floatBuffer16)
-            GL30.glUniformMatrix4fv(shaderModel, false, floatBuffer16)
+            GL30.glUniformMatrix4fv(shaderMainModel, false, floatBuffer16)
             box3DTexturedRenderObject.draw()
         }
 
@@ -115,14 +126,6 @@ class Program {
     }
 
     fun destroy() {
-        shaderProgram.destroy()
-        shaderText.destroy()
-
-        textRenderer.destroy()
-
-        textureContainer.destroy()
-        textureAwesome.destroy()
-
-        box3DTexturedRenderObject.destroy()
+        resourceManager.destroy()
     }
 }
