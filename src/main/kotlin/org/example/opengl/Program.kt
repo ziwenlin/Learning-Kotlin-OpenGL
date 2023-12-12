@@ -20,7 +20,7 @@ class Program {
     val floatBuffer16: FloatBuffer = BufferUtils.createFloatBuffer(16)
 
     // Create shader program
-    val shaderMain = Shader("/shaders/vertex_v5.glsl", "/shaders/fragment_v4.glsl")
+    val shaderMain = Shader("/shaders/tutorial/vertex_v5.glsl", "/shaders/tutorial/fragment_v4.glsl")
     val shaderMainTexture1 = shaderMain.getUniformLocation("uTexture1")
     val shaderMainTexture2 = shaderMain.getUniformLocation("uTexture2")
     val shaderMainProjection = shaderMain.getUniformLocation("mProjection")
