@@ -1,4 +1,4 @@
-package org.example.opengl.utility
+package org.example.opengl.renderer.shaders
 
 import org.example.opengl.window
 import org.lwjgl.opengl.GL20

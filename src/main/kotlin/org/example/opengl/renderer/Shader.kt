@@ -1,16 +1,16 @@
 package org.example.opengl.renderer
 
 import org.example.opengl.constructor.Destroyable
-import org.example.opengl.utility.createShaderProgram
+import org.example.opengl.renderer.shaders.createShaderProgram
 import org.example.opengl.window
 import org.lwjgl.opengl.GL30
 
-@Suppress("unused")
-class Shader(vertexShaderPath: String, fragmentShaderPath: String) : Destroyable {
+
+class Shader : Destroyable {
     private var programID = 0
     private val uniformMap = mutableMapOf<String, Int>()
 
-    init {
+    constructor(vertexShaderPath: String, fragmentShaderPath: String) {
         val vertexShaderSource = javaClass.getResource(vertexShaderPath)?.readText()
         val fragmentShaderSource = javaClass.getResource(fragmentShaderPath)?.readText()
         if (vertexShaderSource == null || fragmentShaderSource == null) {
@@ -20,6 +20,21 @@ class Shader(vertexShaderPath: String, fragmentShaderPath: String) : Destroyable
             window.exit(-1)
         } else {
             programID = createShaderProgram(vertexShaderSource, fragmentShaderSource)
+        }
+    }
+
+    constructor(vertexShaderPath: String, fragmentShaderPath: String, geometryShaderPath: String) {
+        val vertexShaderSource = javaClass.getResource(vertexShaderPath)?.readText()
+        val fragmentShaderSource = javaClass.getResource(fragmentShaderPath)?.readText()
+        val geometryShaderSource = javaClass.getResource(geometryShaderPath)?.readText()
+        if (vertexShaderSource == null || fragmentShaderSource == null || geometryShaderSource == null) {
+            println("Vertex shader or fragment shader not found!")
+            println("Vertex shader source error: ${vertexShaderSource == null}")
+            println("Fragment shader source error: ${fragmentShaderSource == null}")
+            println("Geometry shader source error: ${geometryShaderSource == null}")
+            window.exit(-1)
+        } else {
+            programID = createShaderProgram(vertexShaderSource, fragmentShaderSource, geometryShaderSource)
         }
     }
 
