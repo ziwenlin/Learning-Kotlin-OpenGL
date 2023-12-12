@@ -1,5 +1,6 @@
 package org.example.opengl
 
+import org.example.opengl.renderer.text.TextRenderer
 import org.example.opengl.renderer.Camera
 import org.example.opengl.renderer.Shader
 import org.example.opengl.renderer.SimpleTexturedRenderObject
@@ -10,6 +11,8 @@ import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30
+import org.lwjgl.opengl.GL32
+import java.awt.Font
 import java.nio.FloatBuffer
 
 class Program {
@@ -23,6 +26,11 @@ class Program {
     val shaderView = shaderProgram.getUniformLocation("mView")
     val shaderModel = shaderProgram.getUniformLocation("mModel")
 
+    val shaderText = Shader("/shaders/text/vertex.glsl", "/shaders/text/fragment.glsl")
+    val shaderTextProjection = shaderText.getUniformLocation("Projection")
+    val shaderTextColor = shaderText.getUniformLocation("TextColor")
+    val shaderTextTexture = shaderText.getUniformLocation("Texture")
+
     // Create texture
     val textureContainer = Texture("assets/container.jpg")
     val textureAwesome = Texture("assets/awesome_face.png")
@@ -32,15 +40,28 @@ class Program {
 
     // Create the camera object
     val camera = Camera(width, height)
+    val textRenderer = TextRenderer(Font(Font.MONOSPACED, Font.PLAIN, 20))
 
     init {
         // Set the clear color and the view port
         GL30.glEnable(GL32.GL_PROGRAM_POINT_SIZE)
         GL30.glEnable(GL30.GL_DEPTH_TEST)
+        GL30.glEnable(GL30.GL_BLEND)
+        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA)
         GL30.glClearColor(0.1f, 0.3f, 0.3f, 1.0f)
+        GL30.glViewport(0, 0, width, height)
+
         // Set camera callbacks
         camera.setMouseCallback(window.getID())
         camera.setScrollCallback(window.getID())
+
+        // Set projection matrix for text coordinates
+        Matrix4f()
+            .ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.0f, 10.0f)
+            .get(floatBuffer16)
+        shaderText.use()
+        GL30.glUniformMatrix4fv(shaderTextProjection, false, floatBuffer16)
+
     }
 
     fun run() {
@@ -81,10 +102,23 @@ class Program {
             GL30.glUniformMatrix4fv(shaderModel, false, floatBuffer16)
             box3DTexturedRenderObject.draw()
         }
+
+        val interval = camera.timeDelta
+        val fps = 1f / interval
+
+        shaderText.use()
+        GL30.glUniform1i(shaderTextTexture, 0)
+        GL30.glUniform3f(shaderTextColor, 0.5f, 1.0f, 0.5f)
+        textRenderer.draw("fps: ${fps}", 40f, 20f, 10, 550)
+        textRenderer.draw("interval: ${interval}", 40f, 20f, 10, 500)
+
     }
 
     fun destroy() {
         shaderProgram.destroy()
+        shaderText.destroy()
+
+        textRenderer.destroy()
 
         textureContainer.destroy()
         textureAwesome.destroy()
