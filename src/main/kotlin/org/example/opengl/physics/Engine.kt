@@ -7,7 +7,7 @@ import org.joml.Vector3f
 import java.lang.IndexOutOfBoundsException
 
 class Engine(val frequency: Float) : Destroyable {
-    val grid = Grid(50f)
+    val grid = HashGrid(20f)
     val entities = Manager()
 
     val gravity = Vector3f(0f, -1000f, 0f)
@@ -64,10 +64,8 @@ class Engine(val frequency: Float) : Destroyable {
         val particleIterator = entities.iterator()
         while (particleIterator.hasNext()) {
             val particle = particleIterator.next() as Particle
-            val positionPrevious = Vector3f(particle.positionPrevious)
             particle.updatePosition(timeDelta)
-            val positionCurrent = Vector3f(particle.positionCurrent)
-            grid.update(positionCurrent, positionPrevious, particle)
+            grid.update(particle.positionCurrent, particle)
         }
     }
 
@@ -88,21 +86,22 @@ class Engine(val frequency: Float) : Destroyable {
     }
 
     fun solveCollisions() {
-        val particleIterator = entities.iterator()
-        while (particleIterator.hasNext()) {
-            val particle = particleIterator.next() as Particle
-            val nearParticles = grid.getAroundTarget(particle.positionCurrent, 1)
-
-            for (other in nearParticles) {
-                if (other == particle) continue
-                val collisionAxis = Vector3f(particle.positionCurrent).sub(other.positionCurrent)
-                val distance = collisionAxis.distance(0f, 0f, 0f)
-                val diameter = (particle.diameter + other.diameter) / 2
-                if (distance < diameter && distance != 0f) {
-                    val displacement = collisionAxis.div(distance)
-                        .mul(0.5f * (diameter - distance))
-                    particle.positionCurrent.add(displacement)
-                    other.positionCurrent.sub(displacement)
+        val cell = grid.grid.iterator()
+        while (cell.hasNext()) {
+            val (key, list) = cell.next()
+            val nearParticles = grid.getAroundTarget(key, 1)
+            for (particle in list) {
+                for (other in nearParticles) {
+                    if (other == particle) continue
+                    val collisionAxis = Vector3f(particle.positionCurrent).sub(other.positionCurrent)
+                    val distance = collisionAxis.distance(0f, 0f, 0f)
+                    val diameter = (particle.diameter + other.diameter) / 2
+                    if (distance < diameter && distance != 0f) {
+                        val displacement = collisionAxis.div(distance)
+                            .mul(0.5f * (diameter - distance))
+                        particle.positionCurrent.add(displacement)
+                        other.positionCurrent.sub(displacement)
+                    }
                 }
             }
         }

@@ -2,7 +2,7 @@ package org.example.opengl.physics
 
 import org.joml.Vector3f
 
-class Grid(val gridStep: Float) {
+class HashGrid(private val gridStep: Float) {
     val grid = hashMapOf<String, MutableList<Particle>>()
     val hash = hashMapOf<Particle, String>()
 
@@ -29,15 +29,24 @@ class Grid(val gridStep: Float) {
         return "$x $y $z"
     }
 
+    fun getAroundTarget(hashCode: String, distance: Int): MutableList<Particle> {
+        val (x, y, z) = getCoordinate(hashCode)
+        return getAroundTarget(x, y, z, distance)
+    }
+
     fun getAroundTarget(vector3f: Vector3f, distance: Int): MutableList<Particle> {
         val (x, y, z) = getCoordinate(vector3f)
+        return getAroundTarget(x, y, z, distance)
+    }
+
+    fun getAroundTarget(x: Int, y: Int, z: Int, distance: Int): MutableList<Particle> {
         val particles = mutableListOf<Particle>()
         val distanceRange = -distance..distance
         for (indexX in distanceRange) {
             for (indexY in distanceRange) {
                 for (indexZ in distanceRange) {
                     val hashCode = getHashCode(x + indexX, y + indexY, z)
-                    val grid = get(hashCode)
+                    val grid = get(hashCode) ?: continue
                     particles.addAll(grid)
                 }
             }
@@ -45,9 +54,9 @@ class Grid(val gridStep: Float) {
         return particles
     }
 
-    fun update(current: Vector3f, previous: Vector3f, entity: Particle) {
-        val hashCodePrevious = getHashCode(previous)
-        val hashCodeCurrent = getHashCode(current)
+    fun update(vector3f: Vector3f, entity: Particle) {
+        val hashCodeCurrent = getHashCode(vector3f)
+        val hashCodePrevious = hash[entity] ?: hashCodeCurrent
         if (hashCodeCurrent == hashCodePrevious) {
             return
         }
@@ -57,7 +66,7 @@ class Grid(val gridStep: Float) {
 
     fun remove(hashCode: String, entity: Particle) {
         val hashCodeStored = hash[entity] ?: hashCode
-        val gridList = get(hashCodeStored)
+        val gridList = get(hashCodeStored) ?: return
         while (gridList.remove(entity) == true) {
             continue
         }
@@ -70,14 +79,7 @@ class Grid(val gridStep: Float) {
         hash[entity] = hashCode
     }
 
-    fun get(hashCode: String): MutableList<Particle> {
-        val list = grid[hashCode]
-        if (list == null) {
-            println("Hashcode failed $hashCode")
-            val list1 = mutableListOf<Particle>()
-            grid[hashCode] = list1
-            return list1
-        }
-        return list
+    fun get(hashCode: String): MutableList<Particle>? {
+        return grid[hashCode]
     }
 }
