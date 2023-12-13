@@ -145,9 +145,6 @@ class Program {
         }
 
         // Physics engine
-        performanceProfiler.start()
-        physicsEngine.step()
-        val timePhysics = performanceProfiler.stop()
         if (keyboard.press('F')) {
             physicsEngine.create()
         }
@@ -166,6 +163,9 @@ class Program {
                 physicsEngine.delete()
             }
         }
+        performanceProfiler.start()
+        physicsEngine.update()
+        val timePhysics = performanceProfiler.stop()
 
         // Particles rendering
         shaderParticle.use()

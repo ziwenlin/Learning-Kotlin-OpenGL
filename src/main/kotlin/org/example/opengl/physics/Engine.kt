@@ -7,17 +7,19 @@ import org.joml.Vector3f
 import java.lang.IndexOutOfBoundsException
 
 class Engine(val frequency: Float) : Destroyable {
-    val grid = HashGrid(2f)
+    val grid = HashGrid(5f)
     val entities = Manager()
+    var thread = Thread()
 
     val gravity = Vector3f(0f, 0f, -1000f)
     val center = Vector3f(400f, 300f, 200f)
 
     fun create() {
+        if (thread.isAlive == true) return
         val radians = Math.toRadians(entities.stack.size.toFloat() * 5)
         val x = Math.sin(radians) * 5f
         val y = Math.cos(radians) * 5f
-        val z = Math.sin(radians) * 5f
+        val z = Math.sin(radians) * 0.5f
         val entity = Particle(x, y, z)
         entity.diameter = Math.cos(radians) * 0.5f + 1f
         entity.weight = Math.cos(radians) * 5f + 7f
@@ -28,6 +30,7 @@ class Engine(val frequency: Float) : Destroyable {
     }
 
     fun delete() {
+        if (thread.isAlive == true) return
         try {
             val entity = entities.stack.removeAt(0) as Particle
             val hashCode = grid.getHashCode(entity.positionPrevious)
@@ -38,7 +41,7 @@ class Engine(val frequency: Float) : Destroyable {
         }
     }
 
-    fun clipToLimits(entity: Particle) {
+    private fun clipToLimits(entity: Particle) {
         val position = entity.positionCurrent
         val xLimit = 10f - entity.diameter
         val yLimit = 10f - entity.diameter
@@ -51,7 +54,7 @@ class Engine(val frequency: Float) : Destroyable {
         if (position.z < -zLimit) position.z = -zLimit
     }
 
-    fun step() {
+    private fun step() {
         val sub_step = 8
         val sub_tick = 1 / frequency / sub_step
         for (i in 0 until sub_step) {
@@ -62,7 +65,15 @@ class Engine(val frequency: Float) : Destroyable {
         }
     }
 
-    fun updatePositions(timeDelta: Float) {
+    fun update() {
+        if (thread.isAlive == true) return
+        thread = Thread {
+            step()
+        }
+        thread.start()
+    }
+
+    private fun updatePositions(timeDelta: Float) {
         val particleIterator = entities.iterator()
         while (particleIterator.hasNext()) {
             val particle = particleIterator.next() as Particle
@@ -71,7 +82,7 @@ class Engine(val frequency: Float) : Destroyable {
         }
     }
 
-    fun applyLimits() {
+    private fun applyLimits() {
         val particleIterator = entities.iterator()
         while (particleIterator.hasNext()) {
             val particle = particleIterator.next() as Particle
@@ -79,7 +90,7 @@ class Engine(val frequency: Float) : Destroyable {
         }
     }
 
-    fun applyGravity() {
+    private fun applyGravity() {
         val particleIterator = entities.iterator()
         while (particleIterator.hasNext()) {
             val particle = particleIterator.next() as Particle
@@ -87,27 +98,22 @@ class Engine(val frequency: Float) : Destroyable {
         }
     }
 
-    fun solveCollisions() {
-        val threads = Manager()
-        for (index in 1..24)
-            threads.add(CollisionThread("Collision Thread $index"))
+    private fun solveCollisions() {
         val cellIterator = this.grid.grid.iterator()
         while (cellIterator.hasNext()) {
             val (key, cell) = cellIterator.next()
             if (cell.isEmpty()) continue
             val grid = this.grid.getAroundTarget(key, 1)
-            val thread = threads.cycle() as CollisionThread
-            thread.add(cell, grid)
+            for (particle1 in cell) {
+                for (particle2 in grid) {
+                    if (particle2 == particle1) continue
+                    calculateCollision(particle1, particle2)
+                }
+            }
         }
-        val threadIterator = threads.iterator()
-        while (threadIterator.hasNext()) {
-            val thread = threadIterator.next() as CollisionThread
-            thread.start()
-        }
-        threads.destroy()
     }
 
-    fun calculateCollision(particle1: Particle, particle2: Particle) {
+    private fun calculateCollision(particle1: Particle, particle2: Particle) {
         val collisionAxis = Vector3f(particle1.positionCurrent).sub(particle2.positionCurrent)
         val distance = collisionAxis.length()
         val diameter = (particle1.diameter + particle2.diameter) / 2
@@ -125,6 +131,7 @@ class Engine(val frequency: Float) : Destroyable {
 
 
     override fun destroy() {
+        thread.join()
         entities.destroy()
     }
 
