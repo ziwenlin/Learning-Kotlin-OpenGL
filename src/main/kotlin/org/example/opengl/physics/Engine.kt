@@ -17,8 +17,9 @@ class Engine(val frequency: Float) : Destroyable {
         val radians = Math.toRadians(entities.stack.size.toFloat() * 5)
         val x = Math.sin(radians) * 50f + 400f
         val y = Math.cos(radians) * 50f + 400f
-        val entity = Particle(x, y, -0.3f)
-        entity.diameter = Math.cos(radians) * 12f + 30f
+        val entity = Particle(x, y, -0.8f)
+        entity.diameter = Math.cos(radians) * 3f + 7f
+        entity.weight = Math.cos(radians) * 5f + 7f
         clipToLimits(entity)
         entities.add(entity)
         val hashCode = grid.getHashCode(entity.positionPrevious)
@@ -90,20 +91,28 @@ class Engine(val frequency: Float) : Destroyable {
         while (cell.hasNext()) {
             val (key, list) = cell.next()
             val nearParticles = grid.getAroundTarget(key, 1)
-            for (particle in list) {
-                for (other in nearParticles) {
-                    if (other == particle) continue
-                    val collisionAxis = Vector3f(particle.positionCurrent).sub(other.positionCurrent)
-                    val distance = collisionAxis.distance(0f, 0f, 0f)
-                    val diameter = (particle.diameter + other.diameter) / 2
-                    if (distance < diameter && distance != 0f) {
-                        val displacement = collisionAxis.div(distance)
-                            .mul(0.5f * (diameter - distance))
-                        particle.positionCurrent.add(displacement)
-                        other.positionCurrent.sub(displacement)
-                    }
+            for (particle1 in list) {
+                for (particle2 in nearParticles) {
+                    if (particle2 == particle1) continue
+                    calculateCollision(particle1, particle2)
                 }
             }
+        }
+    }
+
+    fun calculateCollision(particle1: Particle, particle2: Particle) {
+        val collisionAxis = Vector3f(particle1.positionCurrent).sub(particle2.positionCurrent)
+        val distance = collisionAxis.length()
+        val diameter = (particle1.diameter + particle2.diameter) / 2
+        if (distance < diameter && distance != 0.0f) {
+            val direction = collisionAxis.div(distance)
+            val ratio = particle2.weight / (particle1.weight + particle2.weight)
+            val overlap = diameter - distance
+            val displacement1 = ratio * overlap
+            val displacement2 = (1.0f - ratio) * overlap
+
+            particle1.positionCurrent.add(Vector3f(direction).mul(displacement1))
+            particle2.positionCurrent.sub(Vector3f(direction).mul(displacement2))
         }
     }
 

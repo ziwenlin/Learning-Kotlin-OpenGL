@@ -10,6 +10,7 @@ class Particle : Destroyable {
     val acceleration = Vector3f()
 
     var diameter = 20f
+    var weight = 10f
     var energy = 0f
     var bind = 1f
 
