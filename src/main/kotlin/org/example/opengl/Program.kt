@@ -1,6 +1,7 @@
 package org.example.opengl
 
 import org.example.opengl.constructor.Manager
+import org.example.opengl.constructor.SimpleProfiler
 import org.example.opengl.controller.Keyboard
 import org.example.opengl.physics.Engine
 import org.example.opengl.physics.Particle
@@ -60,6 +61,7 @@ class Program {
     // Create resource managers
     val resourceManager = Manager()
     val physicsEngine = Engine(60f)
+    val performanceProfiler = SimpleProfiler(window)
 
     init {
         resourceManager.add(shaderText)
@@ -143,7 +145,9 @@ class Program {
         }
 
         // Physics engine
+        performanceProfiler.start()
         physicsEngine.step()
+        val timePhysics = performanceProfiler.stop()
         if (keyboard.press('F')) {
             physicsEngine.create()
         }
@@ -165,6 +169,7 @@ class Program {
 
         // Particles rendering
         shaderParticle.use()
+        performanceProfiler.start()
         val particleIterator = physicsEngine.entities.iterator()
         while (particleIterator.hasNext()) {
             val particle = particleIterator.next() as Particle
@@ -174,6 +179,7 @@ class Program {
             GL30.glUniform3f(shaderParticleColor, 1f, 1f, 1f)
             circleRenderObject.draw()
         }
+        val timeCircle = performanceProfiler.stop()
 
         // Gather performance statistics
         val interval = camera.timeDelta
@@ -181,6 +187,8 @@ class Program {
             fps: ${1f / interval}
             interval: ${interval}
             particles: ${physicsEngine.entities.stack.size}
+            physics: ${timePhysics * 1000}
+            circles: ${timeCircle * 1000}
         """.trimIndent()
 
         shaderText.use()
