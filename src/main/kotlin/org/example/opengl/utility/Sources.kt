@@ -4,6 +4,50 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
+fun circleIndices3D(precision: Int): IntArray {
+    val list = mutableListOf<Int>()
+    val range = precision * 2
+    val bottom = (precision - 2) * range
+    for (i in 1..range) {
+        list.add(0)
+        list.add(1 + i)
+        list.add(2 + i % range)
+    }
+    for (i in 1..range) {
+        list.add(1)
+        list.add(1 + bottom + i)
+        list.add(2 + bottom + i % range)
+    }
+    for (j in 0..precision - 2) {
+        for (i in 1..range) {
+            list.add(2 + j * range + i)
+            list.add(3 + j * range + i % range)
+            list.add(2 + (j + 1) * range + i)
+
+            list.add(3 + j * range + i % range)
+            list.add(2 + (j + 1) * range + i)
+            list.add(3 + (j + 1) * range + i % range)
+        }
+    }
+    return list.toIntArray()
+}
+
+fun circleVertices3D(precision: Int): FloatArray {
+    val list = mutableListOf(0.0f, 0.0f, 0.5f, 0.0f, 0.0f, -0.5f)
+    val range = precision * 2
+    for (j in 1 until precision) {
+        val z = cos(PI * j / precision).toFloat()
+        for (i in 0 until range) {
+            val x = cos(PI * i / precision).toFloat() * sin(PI * j / precision).toFloat()
+            val y = sin(PI * i / precision).toFloat() * sin(PI * j / precision).toFloat()
+            list.add(x * 0.5f)
+            list.add(y * 0.5f)
+            list.add(z * 0.5f)
+        }
+    }
+    return list.toFloatArray()
+}
+
 fun circleIndices2D(precision: Int): IntArray {
     val list = mutableListOf<Int>()
     val range = precision * 2

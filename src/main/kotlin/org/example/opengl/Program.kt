@@ -12,8 +12,8 @@ import org.example.opengl.renderer.SimpleTexturedRenderObject
 import org.example.opengl.renderer.Texture
 import org.example.opengl.renderer.text.TextRenderer
 import org.example.opengl.utility.boxVertices3D
-import org.example.opengl.utility.circleIndices2D
-import org.example.opengl.utility.circleVertices2D
+import org.example.opengl.utility.circleIndices3D
+import org.example.opengl.utility.circleVertices3D
 import org.example.opengl.utility.coordinates3D
 import org.joml.Matrix4f
 import org.joml.Vector3f
@@ -51,7 +51,7 @@ class Program {
 
     // Create square render object
     val box3DTexturedRenderObject = SimpleTexturedRenderObject(boxVertices3D, 5)
-    val circleRenderObject = RenderObject(circleVertices2D(8), circleIndices2D(8))
+    val circleRenderObject = RenderObject(circleVertices3D(8), circleIndices3D(8))
 
     // Create the camera object
     val camera = Camera(width, height)
