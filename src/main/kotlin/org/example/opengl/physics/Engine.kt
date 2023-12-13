@@ -88,17 +88,23 @@ class Engine(val frequency: Float) : Destroyable {
     }
 
     fun solveCollisions() {
-        val cell = grid.grid.iterator()
-        while (cell.hasNext()) {
-            val (key, list) = cell.next()
-            val nearParticles = grid.getAroundTarget(key, 1)
-            for (particle1 in list) {
-                for (particle2 in nearParticles) {
-                    if (particle2 == particle1) continue
-                    calculateCollision(particle1, particle2)
-                }
-            }
+        val threads = Manager()
+        for (index in 1..24)
+            threads.add(CollisionThread("Collision Thread $index"))
+        val cellIterator = this.grid.grid.iterator()
+        while (cellIterator.hasNext()) {
+            val (key, cell) = cellIterator.next()
+            if (cell.isEmpty()) continue
+            val grid = this.grid.getAroundTarget(key, 1)
+            val thread = threads.cycle() as CollisionThread
+            thread.add(cell, grid)
         }
+        val threadIterator = threads.iterator()
+        while (threadIterator.hasNext()) {
+            val thread = threadIterator.next() as CollisionThread
+            thread.start()
+        }
+        threads.destroy()
     }
 
     fun calculateCollision(particle1: Particle, particle2: Particle) {
