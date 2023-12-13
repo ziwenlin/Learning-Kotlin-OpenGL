@@ -170,6 +170,16 @@ class Program {
         // Particles rendering
         shaderParticle.use()
         performanceProfiler.start()
+
+        // Calculation view matrix
+        camera.getViewMatrix().get(floatBuffer16)
+        GL30.glUniformMatrix4fv(shaderMainView, false, floatBuffer16)
+
+        // Calculation projection matrix
+        camera.getProjectionMatrix().get(floatBuffer16)
+        GL30.glUniformMatrix4fv(shaderMainProjection, false, floatBuffer16)
+
+
         val particleIterator = physicsEngine.entities.iterator()
         while (particleIterator.hasNext()) {
             val particle = particleIterator.next() as Particle

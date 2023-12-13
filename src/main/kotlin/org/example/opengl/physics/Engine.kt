@@ -7,18 +7,19 @@ import org.joml.Vector3f
 import java.lang.IndexOutOfBoundsException
 
 class Engine(val frequency: Float) : Destroyable {
-    val grid = HashGrid(20f)
+    val grid = HashGrid(2f)
     val entities = Manager()
 
-    val gravity = Vector3f(0f, -1000f, 0f)
-    val center = Vector3f(400f, 300f, 0f)
+    val gravity = Vector3f(0f, 0f, -1000f)
+    val center = Vector3f(400f, 300f, 200f)
 
     fun create() {
         val radians = Math.toRadians(entities.stack.size.toFloat() * 5)
-        val x = Math.sin(radians) * 50f + 400f
-        val y = Math.cos(radians) * 50f + 400f
-        val entity = Particle(x, y, -0.8f)
-        entity.diameter = Math.cos(radians) * 3f + 7f
+        val x = Math.sin(radians) * 5f
+        val y = Math.cos(radians) * 5f
+        val z = Math.sin(radians) * 5f
+        val entity = Particle(x, y, z)
+        entity.diameter = Math.cos(radians) * 0.5f + 1f
         entity.weight = Math.cos(radians) * 5f + 7f
         clipToLimits(entity)
         entities.add(entity)
@@ -39,15 +40,15 @@ class Engine(val frequency: Float) : Destroyable {
 
     fun clipToLimits(entity: Particle) {
         val position = entity.positionCurrent
-        val xLimit = 800f - entity.diameter
-        val yLimit = 600f - entity.diameter
-        val xyLimit = entity.diameter
+        val xLimit = 10f - entity.diameter
+        val yLimit = 10f - entity.diameter
+        val zLimit = 10f - entity.diameter
         if (position.x > xLimit) position.x = xLimit
         if (position.y > yLimit) position.y = yLimit
-        if (position.z > 1) position.z = 1f
-        if (position.x < xyLimit) position.x = xyLimit
-        if (position.y < xyLimit) position.y = xyLimit
-        if (position.z < -1) position.z = -1f
+        if (position.z > zLimit) position.z = zLimit
+        if (position.x < -xLimit) position.x = -xLimit
+        if (position.y < -yLimit) position.y = -yLimit
+        if (position.z < -zLimit) position.z = -zLimit
     }
 
     fun step() {
