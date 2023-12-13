@@ -1,13 +1,18 @@
 package org.example.opengl
 
-import org.example.opengl.renderer.text.TextRenderer
 import org.example.opengl.constructor.Manager
 import org.example.opengl.controller.Keyboard
+import org.example.opengl.physics.Engine
+import org.example.opengl.physics.Particle
 import org.example.opengl.renderer.Camera
+import org.example.opengl.renderer.RenderObject
 import org.example.opengl.renderer.Shader
 import org.example.opengl.renderer.SimpleTexturedRenderObject
 import org.example.opengl.renderer.Texture
+import org.example.opengl.renderer.text.TextRenderer
 import org.example.opengl.utility.boxVertices3D
+import org.example.opengl.utility.circleIndices2D
+import org.example.opengl.utility.circleVertices2D
 import org.example.opengl.utility.coordinates3D
 import org.joml.Matrix4f
 import org.joml.Vector3f
@@ -28,6 +33,12 @@ class Program {
     val shaderMainView = shaderMain.getUniformLocation("mView")
     val shaderMainModel = shaderMain.getUniformLocation("mModel")
 
+    val shaderParticle = Shader("/shaders/simple2D/vertex.glsl", "/shaders/simple2D/fragment.glsl")
+    val shaderParticleProjection = shaderParticle.getUniformLocation("Projection")
+    val shaderParticlePosition = shaderParticle.getUniformLocation("vPosition")
+    val shaderParticleColor = shaderParticle.getUniformLocation("vColor")
+    val shaderParticleSize = shaderParticle.getUniformLocation("vSize")
+
     val shaderText = Shader("/shaders/text/vertex.glsl", "/shaders/text/fragment.glsl")
     val shaderTextProjection = shaderText.getUniformLocation("Projection")
     val shaderTextColor = shaderText.getUniformLocation("TextColor")
@@ -39,6 +50,7 @@ class Program {
 
     // Create square render object
     val box3DTexturedRenderObject = SimpleTexturedRenderObject(boxVertices3D, 5)
+    val circleRenderObject = RenderObject(circleVertices2D(8), circleIndices2D(8))
 
     // Create the camera object
     val camera = Camera(width, height)
@@ -47,14 +59,20 @@ class Program {
 
     // Create resource managers
     val resourceManager = Manager()
+    val physicsEngine = Engine(60f)
 
     init {
         resourceManager.add(shaderText)
         resourceManager.add(textRenderer)
+
         resourceManager.add(shaderMain)
         resourceManager.add(textureContainer)
         resourceManager.add(textureAwesome)
         resourceManager.add(box3DTexturedRenderObject)
+
+        resourceManager.add(shaderParticle)
+        resourceManager.add(physicsEngine)
+        resourceManager.add(circleRenderObject)
 
         // Set the clear color and the view port
         GL30.glEnable(GL32.GL_PROGRAM_POINT_SIZE)
@@ -74,6 +92,9 @@ class Program {
             .get(floatBuffer16)
         shaderText.use()
         GL30.glUniformMatrix4fv(shaderTextProjection, false, floatBuffer16)
+
+        shaderParticle.use()
+        GL30.glUniformMatrix4fv(shaderParticleProjection, false, floatBuffer16)
 
     }
 
@@ -121,11 +142,45 @@ class Program {
             box3DTexturedRenderObject.draw()
         }
 
+        // Physics engine
+        physicsEngine.step()
+        if (keyboard.press('F')) {
+            physicsEngine.create()
+        }
+        if (keyboard.press('R')) {
+            for (index in 0 until 10) {
+                physicsEngine.create()
+            }
+        }
+        if (keyboard.press('T')) {
+            for (index in 0 until 10) {
+                physicsEngine.delete()
+            }
+        }
+        if (keyboard.press('Y')) {
+            for (index in 0 until 100) {
+                physicsEngine.delete()
+            }
+        }
+
+        // Particles rendering
+        shaderParticle.use()
+        val particleIterator = physicsEngine.entities.iterator()
+        while (particleIterator.hasNext()) {
+            val particle = particleIterator.next() as Particle
+            val position = particle.positionCurrent
+            GL30.glUniform1f(shaderParticleSize, particle.diameter)
+            GL30.glUniform3f(shaderParticlePosition, position.x, position.y, position.z)
+            GL30.glUniform3f(shaderParticleColor, 1f, 1f, 1f)
+            circleRenderObject.draw()
+        }
+
         // Gather performance statistics
         val interval = camera.timeDelta
         val statistics = """
             fps: ${1f / interval}
             interval: ${interval}
+            particles: ${physicsEngine.entities.stack.size}
         """.trimIndent()
 
         shaderText.use()
