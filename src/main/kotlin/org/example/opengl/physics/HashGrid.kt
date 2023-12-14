@@ -45,7 +45,7 @@ class HashGrid(private val gridStep: Float) {
         for (indexX in distanceRange) {
             for (indexY in distanceRange) {
                 for (indexZ in distanceRange) {
-                    val hashCode = getHashCode(x + indexX, y + indexY, z)
+                    val hashCode = getHashCode(x + indexX, y + indexY, z + indexZ)
                     val grid = get(hashCode) ?: continue
                     particles.addAll(grid)
                 }
