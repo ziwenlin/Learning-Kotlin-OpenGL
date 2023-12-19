@@ -1,8 +1,9 @@
 package org.example.opengl.physics
 
+import org.example.opengl.constructor.Destroyable
 import org.joml.Vector3f
 
-class ArrayGrid(gridLength: Float, gridStep: Float) {
+class ArrayGrid(gridLength: Float, gridStep: Float) : Destroyable {
 
     private val gridSize = (gridLength / gridStep).toInt()
     private val gridMiddle = gridSize / 2
@@ -65,6 +66,20 @@ class ArrayGrid(gridLength: Float, gridStep: Float) {
 
     fun get(x: Int, y: Int, z: Int): MutableList<Particle> {
         return array[x][y][z]
+    }
+
+    override fun destroy() {
+        for (dataX in array) {
+            for (dataY in dataX) {
+                for (dataZ in dataY) {
+                    val iterator = dataZ.iterator()
+                    while (iterator.hasNext()) {
+                        iterator.next()
+                        iterator.remove()
+                    }
+                }
+            }
+        }
     }
 
 }
