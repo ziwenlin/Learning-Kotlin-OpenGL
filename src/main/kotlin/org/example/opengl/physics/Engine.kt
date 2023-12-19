@@ -7,7 +7,7 @@ import org.joml.Vector3f
 import java.lang.IndexOutOfBoundsException
 
 class Engine(val frequency: Float) : Destroyable {
-    val grid = HashGrid(5f)
+    val grid = ArrayGrid(12f, 0.5f)
     val entities = Manager()
     var thread = Thread()
 
@@ -25,16 +25,16 @@ class Engine(val frequency: Float) : Destroyable {
         entity.weight = Math.cos(radians) * 5f + 7f
         clipToLimits(entity)
         entities.add(entity)
-        val hashCode = grid.getHashCode(entity.positionPrevious)
-        grid.set(hashCode, entity)
+        val hashCode = grid.getCoordinate(entity.positionPrevious)
+        grid.set(hashCode.first, hashCode.second, hashCode.third, entity)
     }
 
     fun delete() {
         if (thread.isAlive == true) return
         try {
             val entity = entities.stack.removeAt(0) as Particle
-            val hashCode = grid.getHashCode(entity.positionPrevious)
-            grid.remove(hashCode, entity)
+            val hashCode = grid.getCoordinate(entity.positionPrevious)
+            grid.remove(hashCode.first, hashCode.second, hashCode.third, entity)
             entity.destroy()
         } catch (e: IndexOutOfBoundsException) {
             return
@@ -77,8 +77,8 @@ class Engine(val frequency: Float) : Destroyable {
         val particleIterator = entities.iterator()
         while (particleIterator.hasNext()) {
             val particle = particleIterator.next() as Particle
+            grid.update(particle.positionCurrent, particle.positionPrevious, particle)
             particle.updatePosition(timeDelta)
-            grid.update(particle.positionCurrent, particle)
         }
     }
 
@@ -99,15 +99,18 @@ class Engine(val frequency: Float) : Destroyable {
     }
 
     private fun solveCollisions() {
-        val cellIterator = this.grid.grid.iterator()
-        while (cellIterator.hasNext()) {
-            val (key, cell) = cellIterator.next()
-            if (cell.isEmpty()) continue
-            val grid = this.grid.getAroundTarget(key, 1)
-            for (particle1 in cell) {
-                for (particle2 in grid) {
-                    if (particle2 == particle1) continue
-                    calculateCollision(particle1, particle2)
+        for ((x, dataX) in this.grid.array.withIndex()) {
+            for ((y, dataY) in dataX.withIndex()) {
+                for ((z, dataZ) in dataY.withIndex()) {
+                    if (dataZ.isEmpty()) continue
+                    val grid = this.grid.getAroundGrid(x, y, z, 1)
+                    for (particle1 in dataZ) {
+                        for (list in grid) {
+                            for (particle2 in list) {
+                                calculateCollision(particle1, particle2)
+                            }
+                        }
+                    }
                 }
             }
         }
