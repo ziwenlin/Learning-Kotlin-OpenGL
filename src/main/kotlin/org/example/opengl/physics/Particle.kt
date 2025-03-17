@@ -1,6 +1,7 @@
 package org.example.opengl.physics
 
 import org.example.opengl.constructor.Destroyable
+import org.joml.Math
 import org.joml.Vector3f
 
 class Particle : Destroyable {
@@ -8,6 +9,9 @@ class Particle : Destroyable {
     val positionPrevious = Vector3f()
     val velocity = Vector3f()
     val acceleration = Vector3f()
+
+    // Color of the particle when drawn
+    val color = Vector3f(Math.random().toFloat(), Math.random().toFloat(), Math.random().toFloat())
 
     var diameter = 20f
     var weight = 10f

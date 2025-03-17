@@ -186,7 +186,7 @@ class Program {
             val position = particle.positionCurrent
             GL30.glUniform1f(shaderParticleSize, particle.diameter)
             GL30.glUniform3f(shaderParticlePosition, position.x, position.y, position.z)
-            GL30.glUniform3f(shaderParticleColor, 1f, 1f, 1f)
+            GL30.glUniform3f(shaderParticleColor, particle.color.x, particle.color.y, particle.color.z)
             circleRenderObject.draw()
         }
         val timeCircle = performanceProfiler.stop()
